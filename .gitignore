@@ -1,0 +1,12 @@
+# Logs
+*.log
+node_modules
+dist
+www
+.env
+frontend/android
+frontend/ios
+backend/uploads
+*.db
+*.sqlite
+.DS_Store

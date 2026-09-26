@@ -1,0 +1,70 @@
+<app-siperil-header title="Ajustes" [showBack]="true"></app-siperil-header>
+
+<ion-content>
+  <div class="siperil-page">
+    <article class="siperil-card">
+      <div class="siperil-card-head"><h2>Accesibilidad</h2></div>
+      <div class="siperil-card-body a11y-stack">
+        <section class="a11y-block">
+          <h3>Tamaño del texto</h3>
+          <p class="a11y-value">{{ a11y.fontPercent() }}%</p>
+          <p class="a11y-hint">Ajusta el tamaño de toda la aplicación.</p>
+          <div class="a11y-actions">
+            <ion-button
+              expand="block"
+              fill="outline"
+              [disabled]="!a11y.canDecrease()"
+              aria-label="Disminuir tamaño del texto"
+              (click)="a11y.decreaseFont()"
+            >
+              A−
+            </ion-button>
+            <ion-button
+              expand="block"
+              fill="outline"
+              [disabled]="!a11y.canIncrease()"
+              aria-label="Aumentar tamaño del texto"
+              (click)="a11y.increaseFont()"
+            >
+              A+
+            </ion-button>
+          </div>
+        </section>
+
+        <section class="a11y-row">
+          <div class="a11y-copy">
+            <h3>Texto grande</h3>
+            <p class="a11y-hint">Aumenta el tamaño del texto para facilitar la lectura.</p>
+          </div>
+          <ion-toggle
+            [checked]="a11y.largeText()"
+            aria-label="Activar texto grande"
+            (ionChange)="a11y.setLargeText($event.detail.checked)"
+          ></ion-toggle>
+        </section>
+
+        <section class="a11y-row">
+          <div class="a11y-copy">
+            <h3>Alto contraste</h3>
+            <p class="a11y-hint">Mejora la diferencia entre colores para facilitar la lectura.</p>
+          </div>
+          <ion-toggle
+            [checked]="a11y.highContrast()"
+            aria-label="Activar alto contraste"
+            (ionChange)="a11y.setHighContrast($event.detail.checked)"
+          ></ion-toggle>
+        </section>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          class="reset-btn"
+          (click)="confirmReset()"
+        >
+          Restablecer configuración
+        </ion-button>
+        <p class="a11y-hint reset-hint">Regresa las opciones de accesibilidad a sus valores predeterminados.</p>
+      </div>
+    </article>
+  </div>
+</ion-content>

@@ -1,0 +1,50 @@
+<app-siperil-header title="Detalle del reporte" [showBack]="true" defaultHref="/reports"></app-siperil-header>
+
+<ion-content>
+  <div class="siperil-page">
+    @if (loadError) {
+      <article class="siperil-card">
+        <div class="siperil-card-head"><h2>No se pudo cargar</h2></div>
+        <div class="siperil-card-body">
+          <p class="empty-copy">El reporte no está disponible en este momento.</p>
+        </div>
+      </article>
+    } @else if (report) {
+      <article class="siperil-card">
+        <div class="siperil-card-head">
+          <h2>{{ labels[report.reportType] }}</h2>
+          <span
+            class="siperil-badge"
+            [class.resolved]="report.status === 'resolved'"
+            [class.pending]="report.status === 'pending'"
+          >
+            {{ report.status === 'resolved' ? 'Resuelto' : 'Pendiente' }}
+          </span>
+        </div>
+        <div class="siperil-card-body">
+          <dl class="detail-list">
+            <div><dt>Autor</dt><dd>{{ report.user?.name || '—' }}</dd></div>
+            <div><dt>Empresa</dt><dd>{{ report.company }}</dd></div>
+            <div><dt>Lugar</dt><dd>{{ report.place || '—' }}</dd></div>
+            <div><dt>Fecha</dt><dd>{{ report.incidentDate || report.createdAt }}</dd></div>
+            <div><dt>Hora</dt><dd>{{ report.incidentTime || '—' }}</dd></div>
+            <div><dt>Turno</dt><dd>{{ report.shift ? report.shift.charAt(0).toUpperCase() + report.shift.slice(1) : '—' }}</dd></div>
+            @if (report.weatherSummary) {
+              <div><dt>Clima</dt><dd>{{ report.weatherSummary }}</dd></div>
+            }
+          </dl>
+          <p class="card-desc">{{ report.description }}</p>
+          @if (report.imageUrl) {
+            <img [src]="report.imageUrl" alt="Evidencia fotográfica del reporte" class="preview-photo" />
+          }
+          @if (report.status === 'pending') {
+            <ion-button expand="block" [routerLink]="['/reports', report.id, 'edit']">Editar este reporte</ion-button>
+          }
+          @if (report.status === 'pending' && auth.isAdmin()) {
+            <ion-button expand="block" color="success" (click)="markResolved()">Marcar como resuelto</ion-button>
+          }
+        </div>
+      </article>
+    }
+  </div>
+</ion-content>

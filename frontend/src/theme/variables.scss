@@ -1,0 +1,98 @@
+/* paleta corporativa de industrias siperil s.a.s — uso más sobrio */
+:root {
+  --ion-color-primary: #c47a15;
+  --ion-color-primary-rgb: 196, 122, 21;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #ac6b12;
+  --ion-color-primary-tint: #ca8830;
+
+  --ion-color-secondary: #8d7340;
+  --ion-color-secondary-rgb: 141, 115, 64;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #7c6538;
+  --ion-color-secondary-tint: #988153;
+
+  --ion-color-tertiary: #2a2a2a;
+  --ion-color-tertiary-rgb: 42, 42, 42;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #252525;
+  --ion-color-tertiary-tint: #3f3f3f;
+
+  --ion-color-success: #3d6b4f;
+  --ion-color-success-rgb: 61, 107, 79;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #365e45;
+  --ion-color-success-tint: #507a61;
+
+  --ion-color-warning: #c47a15;
+  --ion-color-warning-rgb: 196, 122, 21;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #ac6b12;
+  --ion-color-warning-tint: #ca8830;
+
+  --ion-color-danger: #b42318;
+  --ion-color-danger-rgb: 180, 35, 24;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #9e1f15;
+  --ion-color-danger-tint: #bc3930;
+
+  --ion-color-dark: #161616;
+  --ion-color-dark-rgb: 22, 22, 22;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #131313;
+  --ion-color-dark-tint: #2d2d2d;
+
+  --ion-color-medium: #6b6b6b;
+  --ion-color-medium-rgb: 107, 107, 107;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #5e5e5e;
+  --ion-color-medium-tint: #7a7a7a;
+
+  --ion-color-light: #f4f2ee;
+  --ion-color-light-rgb: 244, 242, 238;
+  --ion-color-light-contrast: #161616;
+  --ion-color-light-contrast-rgb: 22, 22, 22;
+  --ion-color-light-shade: #d7d5d1;
+  --ion-color-light-tint: #f5f3f0;
+
+  --ion-background-color: #f4f2ee;
+  --ion-background-color-rgb: 244, 242, 238;
+  --ion-text-color: #1f1f1f;
+  --ion-text-color-rgb: 31, 31, 31;
+  --ion-item-background: #ffffff;
+  --ion-card-background: #ffffff;
+  --ion-font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --ion-toolbar-background: #161616;
+  --ion-toolbar-color: #ffffff;
+  --ion-tab-bar-background: #161616;
+  --ion-tab-bar-color: #c8c8c8;
+  --ion-tab-bar-color-selected: #d4a017;
+
+  /* naranja de marca (#f29100) bajado de saturación para la UI */
+  --siperil-orange: #c47a15;
+  --siperil-orange-soft: #efe4d2;
+  --siperil-gold: #b8923a;
+  --siperil-dark: #161616;
+  --siperil-dark-2: #2a2a2a;
+  --siperil-white: #ffffff;
+  --siperil-bg: #f4f2ee;
+  --siperil-surface: #ffffff;
+  --siperil-border: #e6e1d8;
+  --siperil-muted: #6a6a6a;
+  --siperil-success: #3d6b4f;
+  --siperil-success-soft: #e7efe9;
+  --siperil-danger: #b42318;
+  --siperil-danger-soft: #f8e8e6;
+  --siperil-pending-bg: #f3ead8;
+  --siperil-pending-fg: #7a5a18;
+  --siperil-touch: 48px;
+  --siperil-bottom-nav: 68px;
+}

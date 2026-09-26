@@ -1,0 +1,22 @@
+<div class="logo-wrap" [class.compact]="compact" [class.dark]="dark">
+  <!-- aca va el escudo naranja/amarillo de la empresa -->
+  <img
+    class="logo-img"
+    src="assets/brand/siperil-logo.png"
+    alt="Industrias SIPERIL S.A.S. Seguridad industrial"
+    [hidden]="broken"
+    (error)="broken = true"
+  />
+  <svg class="logo-svg" [class.show]="broken" viewBox="0 0 88 88" aria-hidden="true" focusable="false">
+    <path d="M44 6c14 10 24 12 30 12v26c0 18-12 32-30 40C26 76 14 62 14 44V18c6 0 16-2 30-12z" fill="#1a1a1a"/>
+    <polygon points="44,18 68,32 68,56 44,70 20,56 20,32" fill="#f29100"/>
+    <path d="M44 26l16 9v18l-16 9-16-9V35z" fill="#ffc83b"/>
+    <text x="44" y="50" text-anchor="middle" font-size="22" font-weight="800" fill="#1a1a1a">S</text>
+  </svg>
+  @if (!compact && broken) {
+    <div class="logo-text">
+      <strong>SIPERIL S.A.S.</strong>
+      <span>Seguridad industrial</span>
+    </div>
+  }
+</div>

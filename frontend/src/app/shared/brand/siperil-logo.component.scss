@@ -1,0 +1,69 @@
+/* acomodando el logo para que no se descuadre en android */
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+  max-width: min(220px, 58vw);
+  object-fit: contain;
+}
+
+.logo-svg {
+  display: none;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.logo-svg.show {
+  display: block;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.logo-text strong {
+  font-size: 0.92rem;
+  color: var(--siperil-orange);
+  line-height: 1.1;
+}
+
+.logo-text span {
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--siperil-muted);
+}
+
+.compact {
+  flex-shrink: 0;
+}
+
+.compact .logo-img {
+  height: 32px;
+  max-width: min(148px, 38vw);
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+
+.dark .logo-text span {
+  color: var(--siperil-gold);
+}
+
+@media (max-width: 380px) {
+  .compact .logo-img {
+    height: 28px;
+    max-width: 104px;
+    padding: 2px 4px;
+  }
+}

@@ -1,0 +1,8 @@
+:host {
+  display: contents;
+}
+
+/* ajustando la barra de navegacion para pantallas pequeñas */
+ion-toolbar {
+  --min-height: 60px;
+}

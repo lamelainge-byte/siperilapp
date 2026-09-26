@@ -1,0 +1,32 @@
+<app-siperil-header title="Reportes de seguridad" [showMenu]="true"></app-siperil-header>
+
+<ion-content>
+  <div class="siperil-page">
+    <p class="welcome">
+      <span class="welcome-name">Hola, {{ auth.user()?.name }}.</span>
+      <span class="welcome-hint">Elige el tipo de reporte.</span>
+    </p>
+
+    @if (auth.isAdmin()) {
+      <ion-button expand="block" color="dark" class="admin-entry" routerLink="/admin">
+        Panel de administración
+      </ion-button>
+    }
+
+    <div class="type-grid">
+      @for (item of types; track item.type) {
+        <a class="type-card" [routerLink]="['/reports/new', item.type]">
+          <ion-icon [name]="item.icon"></ion-icon>
+          <div>
+            <h3>{{ item.label }}</h3>
+            <p>Crear un nuevo registro en campo.</p>
+          </div>
+        </a>
+      }
+    </div>
+
+    <ion-button expand="block" fill="outline" class="reports-entry" routerLink="/reports">
+      Consultar y editar mis reportes
+    </ion-button>
+  </div>
+</ion-content>

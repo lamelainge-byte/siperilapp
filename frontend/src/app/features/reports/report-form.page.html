@@ -1,0 +1,70 @@
+<app-siperil-header [title]="title" [showBack]="true"></app-siperil-header>
+
+<ion-content>
+  <div class="siperil-page">
+    <form class="form-actions" [formGroup]="form" (ngSubmit)="submit()">
+      @if (needsDateTime) {
+        <ion-item>
+          <ion-input type="date" label="Fecha" labelPlacement="floating" formControlName="incidentDate"></ion-input>
+        </ion-item>
+        @if (reportType !== 'maintenance') {
+          <ion-item>
+            <ion-input type="time" label="Hora" labelPlacement="floating" formControlName="incidentTime"></ion-input>
+          </ion-item>
+        }
+      }
+
+      @if (needsShift) {
+        <ion-item>
+          <ion-select label="Turno" labelPlacement="floating" formControlName="shift" interface="action-sheet">
+            <ion-select-option value="mañana">Mañana</ion-select-option>
+            <ion-select-option value="tarde">Tarde</ion-select-option>
+            <ion-select-option value="noche">Noche</ion-select-option>
+          </ion-select>
+        </ion-item>
+      }
+
+      <ion-item>
+        <ion-input label="Lugar" labelPlacement="floating" formControlName="place"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-textarea
+          label="Descripción"
+          labelPlacement="floating"
+          formControlName="description"
+          autoGrow="true"
+          [counter]="true"
+        ></ion-textarea>
+      </ion-item>
+      @if (form.controls.description.touched && form.controls.description.invalid) {
+        <ion-note color="danger">Describe el incidente (mínimo 5 caracteres).</ion-note>
+      }
+
+      <ion-button expand="block" fill="outline" type="button" (click)="captureLocation()">
+        Capturar ubicación GPS
+      </ion-button>
+      @if (form.controls.latitude.value) {
+        <p class="hint">Latitud {{ form.controls.latitude.value }} · Longitud {{ form.controls.longitude.value }}</p>
+      }
+      @if (weatherHint) {
+        <p class="hint">Clima (OpenWeather): {{ weatherHint }}</p>
+      }
+
+      <ion-button expand="block" fill="outline" type="button" (click)="capturePhoto()">
+        Adjuntar o tomar foto
+      </ion-button>
+      @if (preview) {
+        <img [src]="preview" alt="Evidencia fotográfica del reporte" class="preview-photo" />
+      }
+
+      <ion-button expand="block" type="submit" class="submit-action" [disabled]="loading">
+        @if (loading) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          {{ reportId ? 'Guardar cambios' : 'Enviar reporte' }}
+        }
+      </ion-button>
+    </form>
+  </div>
+</ion-content>

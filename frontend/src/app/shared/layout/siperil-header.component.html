@@ -1,0 +1,19 @@
+<ion-header>
+  <!-- cambiando el color del header al naranja de la empresa en la raya de abajo -->
+  <ion-toolbar class="siperil-toolbar">
+    <ion-buttons slot="start">
+      @if (showMenu) {
+        <ion-menu-button autoHide="false"></ion-menu-button>
+      }
+      @if (showBack) {
+        <ion-back-button [defaultHref]="defaultHref" text="" aria-label="Regresar"></ion-back-button>
+      }
+    </ion-buttons>
+    <div class="header-brand">
+      <app-siperil-logo [compact]="true" [dark]="true"></app-siperil-logo>
+      @if (title) {
+        <span class="header-title">{{ title }}</span>
+      }
+    </div>
+  </ion-toolbar>
+</ion-header>

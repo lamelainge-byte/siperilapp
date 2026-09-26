@@ -1,0 +1,73 @@
+<app-siperil-header title="Acceso"></app-siperil-header>
+
+<ion-content>
+  <div class="siperil-page auth-page">
+    <div class="auth-hero">
+      <app-siperil-logo></app-siperil-logo>
+    </div>
+    <article class="siperil-card">
+      <div class="siperil-card-head">
+        <h2>{{ isLogin ? 'Iniciar sesión' : 'Registrarse' }}</h2>
+      </div>
+      <div class="siperil-card-body">
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          @if (!isLogin) {
+            <ion-item>
+              <ion-input label="Nombre" labelPlacement="floating" formControlName="name"></ion-input>
+            </ion-item>
+            @if (form.controls.name.touched && form.controls.name.invalid) {
+              <ion-note color="danger">Ingresa tu nombre (mínimo 2 caracteres).</ion-note>
+            }
+          }
+
+          <ion-item>
+            <ion-input
+              type="email"
+              label="Correo electrónico"
+              labelPlacement="floating"
+              formControlName="email"
+              autocomplete="email"
+            ></ion-input>
+          </ion-item>
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <ion-note color="danger">Ingresa un correo válido.</ion-note>
+          }
+
+          @if (!isLogin) {
+            <ion-item>
+              <ion-input label="Empresa" labelPlacement="floating" formControlName="company"></ion-input>
+            </ion-item>
+            @if (form.controls.company.touched && form.controls.company.invalid) {
+              <ion-note color="danger">Ingresa la empresa.</ion-note>
+            }
+          }
+
+          <ion-item>
+            <ion-input
+              type="password"
+              label="Contraseña"
+              labelPlacement="floating"
+              formControlName="password"
+              autocomplete="current-password"
+            ></ion-input>
+          </ion-item>
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <ion-note color="danger">Mínimo 6 caracteres.</ion-note>
+          }
+
+          <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="loading">
+            @if (loading) {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              {{ isLogin ? 'Iniciar sesión' : 'Registrarse' }}
+            }
+          </ion-button>
+        </form>
+
+        <ion-button fill="clear" expand="block" class="auth-switch" (click)="toggleMode()">
+          {{ isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión' }}
+        </ion-button>
+      </div>
+    </article>
+  </div>
+</ion-content>

@@ -1,0 +1,199 @@
+<app-siperil-header title="Administración" [showBack]="true"></app-siperil-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="siperil-page">
+    <div class="stat-grid">
+      <div class="stat-card"><strong>{{ total }}</strong><span>Total</span></div>
+      <div class="stat-card"><strong>{{ pending }}</strong><span>Pendientes</span></div>
+      <div class="stat-card"><strong>{{ resolved }}</strong><span>Resueltos</span></div>
+    </div>
+
+    @if (loading) {
+      <ion-skeleton-text [animated]="true" style="height: 88px"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" style="height: 88px"></ion-skeleton-text>
+    } @else if (errorMessage) {
+      <article class="siperil-card">
+        <div class="siperil-card-head"><h2>No se pudo cargar el panel</h2></div>
+        <div class="siperil-card-body">
+          <p>{{ errorMessage }}</p>
+          <ion-button expand="block" color="warning" (click)="load()">Reintentar</ion-button>
+        </div>
+      </article>
+    } @else {
+      <section class="summary-grid">
+        <article class="siperil-card summary-card">
+          <div class="siperil-card-head"><h2>Por estado</h2></div>
+          <div class="siperil-card-body">
+            <div class="meter">
+              <div class="meter-label">
+                <span>Pendientes</span>
+                <span>{{ pending }} ({{ pendingPercent }}%)</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill pending" [style.width.%]="pendingPercent"></div>
+              </div>
+            </div>
+            <div class="meter">
+              <div class="meter-label">
+                <span>Resueltos</span>
+                <span>{{ resolved }} ({{ resolvedPercent }}%)</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill resolved" [style.width.%]="resolvedPercent"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="siperil-card summary-card">
+          <div class="siperil-card-head"><h2>Por tipo</h2></div>
+          <div class="siperil-card-body">
+            @for (row of typeSummary; track row.key) {
+              <div class="meter">
+                <div class="meter-label">
+                  <span>{{ row.label }}</span>
+                  <span>{{ row.count }} ({{ row.percent }}%)</span>
+                </div>
+                <div class="meter-track">
+                  <div class="meter-fill" [style.width.%]="row.percent"></div>
+                </div>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="siperil-card summary-card">
+          <div class="siperil-card-head"><h2>Por empresa</h2></div>
+          <div class="siperil-card-body">
+            @if (!companySummary.length) {
+              <p class="empty-hint">No hay empresas en el rango seleccionado.</p>
+            } @else {
+              @for (row of companySummary; track row.key) {
+                <div class="meter">
+                  <div class="meter-label">
+                    <span>{{ row.label }}</span>
+                    <span>{{ row.count }} ({{ row.percent }}%)</span>
+                  </div>
+                  <div class="meter-track">
+                    <div class="meter-fill" [style.width.%]="row.percent"></div>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </article>
+      </section>
+
+      <div class="filter-row">
+        <ion-item>
+          <ion-select
+            label="Empresa"
+            [(ngModel)]="company"
+            (ionChange)="applyFilter()"
+            interface="action-sheet"
+          >
+            <ion-select-option [value]="null">Todas</ion-select-option>
+            @for (c of companies; track c) {
+              <ion-select-option [value]="c">{{ c }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-select
+            label="Fecha"
+            [(ngModel)]="dateFilter"
+            (ionChange)="applyFilter()"
+            interface="action-sheet"
+          >
+            <ion-select-option value="all">Todas</ion-select-option>
+            <ion-select-option value="today">Hoy</ion-select-option>
+            <ion-select-option value="7d">Últimos 7 días</ion-select-option>
+            <ion-select-option value="30d">Últimos 30 días</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      @if (!filtered.length) {
+        <article class="siperil-card">
+          <div class="siperil-card-head"><h2>Sin resultados</h2></div>
+          <div class="siperil-card-body">
+            <p>No hay reportes registrados para los filtros seleccionados.</p>
+          </div>
+        </article>
+      } @else {
+        <div class="report-table-wrap">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Autor</th>
+                <th>Empresa</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (r of filtered; track r.id) {
+                <tr>
+                  <td>{{ r.user?.name || '—' }}</td>
+                  <td>{{ r.company }}</td>
+                  <td>{{ labels[r.reportType] }}</td>
+                  <td>
+                    <span
+                      class="siperil-badge"
+                      [class.resolved]="r.status === 'resolved'"
+                      [class.pending]="r.status === 'pending'"
+                    >
+                      {{ r.status === 'resolved' ? 'Resuelto' : 'Pendiente' }}
+                    </span>
+                  </td>
+                  <td class="actions-cell">
+                    <ion-button size="small" [routerLink]="['/reports', r.id]">Ver</ion-button>
+                    @if (r.status === 'pending') {
+                      <ion-button size="small" color="success" (click)="markResolved(r)">Resolver</ion-button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-cards-mobile">
+          @for (r of filtered; track r.id) {
+            <article class="siperil-card">
+              <div class="siperil-card-head">
+                <h2>{{ r.user?.name || '—' }}</h2>
+                <span
+                  class="siperil-badge"
+                  [class.resolved]="r.status === 'resolved'"
+                  [class.pending]="r.status === 'pending'"
+                >
+                  {{ r.status === 'resolved' ? 'Resuelto' : 'Pendiente' }}
+                </span>
+              </div>
+              <div class="siperil-card-body">
+                <p class="meta"><span>Empresa</span> {{ r.company }}</p>
+                <p class="meta"><span>Tipo</span> {{ labels[r.reportType] }}</p>
+                <p class="card-desc">{{ r.description }}</p>
+                @if (r.imageUrl) {
+                  <img [src]="r.imageUrl" alt="Evidencia fotográfica" class="preview-photo" />
+                }
+                <div class="touch-row">
+                  <ion-button [routerLink]="['/reports', r.id]">Ver detalle</ion-button>
+                  @if (r.status === 'pending') {
+                    <ion-button color="success" (click)="markResolved(r)">Marcar como resuelto</ion-button>
+                  }
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>

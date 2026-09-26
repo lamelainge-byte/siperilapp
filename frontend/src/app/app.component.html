@@ -1,0 +1,74 @@
+<ion-app [class.has-bottom-nav]="showBottomNav">
+  <ion-menu contentId="main-content">
+    <div class="menu-brand">
+      <app-siperil-logo [dark]="true"></app-siperil-logo>
+      <p>Seguridad industrial</p>
+    </div>
+    <ion-content>
+      <ion-list>
+        <ion-menu-toggle auto-hide="true">
+          <ion-item routerLink="/home" routerLinkActive="menu-active" aria-label="Ir a Inicio">Inicio</ion-item>
+          <ion-item routerLink="/reports" routerLinkActive="menu-active" aria-label="Ir a Reportes">Mis reportes</ion-item>
+          @if (auth.isAdmin()) {
+            <ion-item routerLink="/admin" routerLinkActive="menu-active" aria-label="Ir a Administración">Administración</ion-item>
+          }
+          <ion-item routerLink="/settings" routerLinkActive="menu-active" aria-label="Ir a Ajustes">Ajustes</ion-item>
+          @if (auth.isLoggedIn()) {
+            <ion-item button (click)="auth.logout()" aria-label="Cerrar sesión">
+              <ion-icon name="log-out-outline" slot="start"></ion-icon>
+              Cerrar sesión
+            </ion-item>
+          }
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+  @if (showBottomNav) {
+    <!-- barra de abajo para usar con una mano en android -->
+    <nav class="bottom-nav" [class.cols-3]="!auth.isAdmin()" [class.cols-4]="auth.isAdmin()" aria-label="Navegación principal">
+      <a
+        routerLink="/home"
+        routerLinkActive="active"
+        routerDirection="root"
+        aria-label="Ir a Inicio"
+        ariaCurrentWhenActive="page"
+      >
+        <ion-icon name="home-outline" aria-hidden="true"></ion-icon>
+        Inicio
+      </a>
+      <a
+        routerLink="/reports"
+        routerLinkActive="active"
+        routerDirection="root"
+        aria-label="Ir a Reportes"
+        ariaCurrentWhenActive="page"
+      >
+        <ion-icon name="clipboard-outline" aria-hidden="true"></ion-icon>
+        Reportes
+      </a>
+      @if (auth.isAdmin()) {
+        <a
+          routerLink="/admin"
+          routerLinkActive="active"
+          routerDirection="root"
+          aria-label="Ir a Administración"
+          ariaCurrentWhenActive="page"
+        >
+          <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+          Admin
+        </a>
+      }
+      <a
+        routerLink="/settings"
+        routerLinkActive="active"
+        routerDirection="root"
+        aria-label="Ir a Ajustes"
+        ariaCurrentWhenActive="page"
+      >
+        <ion-icon name="settings-outline" aria-hidden="true"></ion-icon>
+        Ajustes
+      </a>
+    </nav>
+  }
+</ion-app>
