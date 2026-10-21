@@ -10,6 +10,7 @@
     "start": "node dist/index.js",
     "migration:run": "tsx ./node_modules/typeorm/cli.js migration:run -d src/shared/config/data-source.ts",
     "seed": "tsx src/shared/config/seed.ts",
+    "seed:prod": "node dist/shared/config/seed.js",
     "test": "vitest run"
   },
   "dependencies": {

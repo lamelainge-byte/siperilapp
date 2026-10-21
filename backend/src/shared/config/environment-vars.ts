@@ -1,5 +1,7 @@
 import 'dotenv/config';
+// carga backend/.env y deja cada variable en process.env antes de validar
 import Joi from 'joi';
+// joi revisa que existan host, base y secretos, si falta algo, el api no arranca
 
 export type EnvVars = {
   PORT: number;
@@ -26,18 +28,26 @@ export type EnvVars = {
 };
 
 function applyDatabaseUrlFallback() {
-  // si llega DATABASE_URL se parte en host, puerto, usuario y base
+  // si solo llega database_url (postgres://usuario:clave@host:puerto/base), se parte en db_host, db_port, etc
   const url = process.env.DATABASE_URL;
-  if (!url || process.env.DB_HOST) {
+  if (!url) {
     return;
   }
   try {
     const parsed = new URL(url);
-    process.env.DB_HOST ??= parsed.hostname;
-    process.env.DB_PORT ??= parsed.port || '5432';
-    process.env.DB_USER ??= decodeURIComponent(parsed.username);
-    process.env.DB_PASSWORD ??= decodeURIComponent(parsed.password);
-    process.env.DB_NAME ??= parsed.pathname.replace(/^\//, '').split('?')[0];
+    const ssl = parsed.searchParams.get('sslmode') === 'require';
+    // la url cifrada de neon gana sobre el host local del archivo env
+    if (!ssl && process.env.DB_HOST) {
+      return;
+    }
+    process.env.DB_HOST = parsed.hostname;
+    process.env.DB_PORT = parsed.port || '5432';
+    process.env.DB_USER = decodeURIComponent(parsed.username);
+    process.env.DB_PASSWORD = decodeURIComponent(parsed.password);
+    process.env.DB_NAME = parsed.pathname.replace(/^\//, '').split('?')[0];
+    if (ssl) {
+      process.env.DB_SSL = 'true';
+    }
   } catch {
     throw new Error('DATABASE_URL no es una URL de PostgreSQL válida');
   }
@@ -46,14 +56,14 @@ function applyDatabaseUrlFallback() {
 applyDatabaseUrlFallback();
 
 const schema = Joi.object({
-  PORT: Joi.number().default(3000),
+  PORT: Joi.number().default(3000), // puerto http del api, por defecto 3000
   NODE_ENV: Joi.string().default('development'),
-  DB_HOST: Joi.string().required(),
-  DB_PORT: Joi.number().default(5432),
+  DB_HOST: Joi.string().required(), // obligatorio: sin host no hay conexion
+  DB_PORT: Joi.number().default(5432), // puerto de postgresql, no el del api
   DB_USER: Joi.string().required(),
   DB_PASSWORD: Joi.string().allow('').optional(),
-  DB_NAME: Joi.string().required(),
-  JWT_ACCESS_SECRET: Joi.string().min(16).required(),
+  DB_NAME: Joi.string().required(), // nombre de la base
+  JWT_ACCESS_SECRET: Joi.string().min(16).required(), // firma del access token
   JWT_REFRESH_SECRET: Joi.string().min(16).required(),
   JWT_ACCESS_EXPIRES: Joi.string().default('8h'),
   JWT_REFRESH_EXPIRES_DAYS: Joi.number().default(7),
@@ -82,17 +92,20 @@ export const envs = {
   port: validated.PORT,
   nodeEnv: validated.NODE_ENV,
   db: {
+    // este objeto es el que lee data-source.ts para abrir postgresql
     host: validated.DB_HOST,
     port: validated.DB_PORT,
     user: validated.DB_USER,
     password: validated.DB_PASSWORD ?? '',
     name: validated.DB_NAME,
+    ssl: process.env.DB_SSL === 'true',
   },
   jwtAccessSecret: validated.JWT_ACCESS_SECRET,
   jwtRefreshSecret: validated.JWT_REFRESH_SECRET,
   jwtAccessExpires: validated.JWT_ACCESS_EXPIRES,
   jwtRefreshExpiresDays: validated.JWT_REFRESH_EXPIRES_DAYS,
-  publicBaseUrl: validated.PUBLIC_BASE_URL,
+  // render entrega su direccion publica; si no existe se usa la del archivo env
+  publicBaseUrl: process.env.RENDER_EXTERNAL_URL || validated.PUBLIC_BASE_URL,
   openWeatherApiKey: validated.OPENWEATHER_API_KEY,
   emailJs: {
     serviceId: validated.EMAILJS_SERVICE_ID,
