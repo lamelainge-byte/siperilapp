@@ -1,3 +1,4 @@
+// tabla user, typeorm mapea esta clase a postgresql, el caso de uso no la ve: la usa useradapter
 import {
   Column,
   CreateDateColumn,
@@ -25,6 +26,10 @@ export class UserModel {
 
   @Column({ type: 'text' })
   company!: string;
+
+  // numero interno del trabajador, el admin puede no tenerlo
+  @Column({ type: 'text', nullable: true, unique: true })
+  employeeNumber!: string | null;
 
   // worker usa la app y admin administra reportes y usuarios
   @Column({ type: 'enum', enum: ['worker', 'admin'], enumName: 'Role', default: 'worker' })

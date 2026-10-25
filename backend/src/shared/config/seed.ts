@@ -1,3 +1,4 @@
+// comando aparte: npm run seed, crea el admin con admin_email y admin_password, no corre con npm run dev
 import 'reflect-metadata';
 import bcrypt from 'bcrypt';
 import { ReportModel } from '../../modules/reports/infrastructure/persistence/ReportModel.js';
@@ -49,6 +50,7 @@ async function seed() {
         email: 'ana@empresa.com',
         name: 'Ana Trabajadora',
         company: 'Empresa Demo',
+        employeeNumber: '1001',
         role: 'worker',
         status: 1,
         passwordHash: workerHash,

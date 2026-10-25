@@ -5,6 +5,7 @@ import { ReportModel } from '../../modules/reports/infrastructure/persistence/Re
 import { SiteModel } from '../../modules/sites/infrastructure/persistence/SiteModel.js';
 import { UserModel } from '../../modules/users/infrastructure/persistence/UserModel.js';
 // cada import es una tabla: user, report, site y refreshtoken
+import { AddEmployeeNumber1726500000000 } from './migrations/1726500000000-AddEmployeeNumber.js';
 import { InitSchema1726400000000 } from './migrations/1726400000000-InitSchema.js';
 // esta clase trae el sql que crea esas tablas la primera vez
 import { envs } from './environment-vars.js';
@@ -24,5 +25,5 @@ export const AppDataSource = new DataSource({
   migrationsRun: true, // al conectar ejecuta las migraciones que aun no corrieron
   logging: envs.nodeEnv === 'development', // en desarrollo imprime el sql en la consola
   entities: [UserModel, ReportModel, SiteModel, RefreshTokenModel], // modelos que typeorm puede leer y guardar
-  migrations: [InitSchema1726400000000], // migracion registrada: crea enums, tablas y llaves foraneas
+  migrations: [InitSchema1726400000000, AddEmployeeNumber1726500000000],
 });

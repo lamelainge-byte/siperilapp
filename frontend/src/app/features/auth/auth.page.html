@@ -40,6 +40,22 @@
             @if (form.controls.company.touched && form.controls.company.invalid) {
               <ion-note color="danger">Ingresa la empresa.</ion-note>
             }
+
+            <ion-item>
+              <ion-input label="Rol" labelPlacement="floating" value="Trabajador" [readonly]="true"></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                label="Número del trabajador"
+                labelPlacement="floating"
+                formControlName="employeeNumber"
+                inputmode="text"
+              ></ion-input>
+            </ion-item>
+            @if (form.controls.employeeNumber.touched && form.controls.employeeNumber.invalid) {
+              <ion-note color="danger">Ingresa el número del trabajador.</ion-note>
+            }
           }
 
           <ion-item>

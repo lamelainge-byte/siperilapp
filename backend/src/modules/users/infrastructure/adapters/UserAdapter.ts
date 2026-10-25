@@ -8,6 +8,7 @@ export class UserAdapter implements UserPort {
   private readonly userRepository: Repository<UserModel>;
 
   constructor() {
+    // pide a la conexion ya abierta el repositorio de la tabla user
     this.userRepository = AppDataSource.getRepository(UserModel);
   }
 
@@ -18,6 +19,7 @@ export class UserAdapter implements UserPort {
       email: entity.email,
       passwordHash: entity.passwordHash,
       company: entity.company,
+      employeeNumber: entity.employeeNumber,
       role: entity.role,
       status: entity.status,
       createdAt: entity.createdAt,
@@ -35,6 +37,7 @@ export class UserAdapter implements UserPort {
     entity.email = user.email;
     entity.passwordHash = user.passwordHash;
     entity.company = user.company;
+    entity.employeeNumber = user.employeeNumber;
     entity.role = user.role;
     entity.status = user.status;
     entity.createdAt = 'createdAt' in user && user.createdAt ? user.createdAt : new Date();
@@ -56,6 +59,7 @@ export class UserAdapter implements UserPort {
       email: user.email ?? existing.email,
       passwordHash: user.passwordHash ?? existing.passwordHash,
       company: user.company ?? existing.company,
+      employeeNumber: user.employeeNumber !== undefined ? user.employeeNumber : existing.employeeNumber,
       role: user.role ?? existing.role,
       status: user.status ?? existing.status,
     });
@@ -82,6 +86,11 @@ export class UserAdapter implements UserPort {
   // consulta usada por login y registro para buscar el correo
   async getUserByEmail(email: string): Promise<UserDomain | null> {
     const row = await this.userRepository.findOne({ where: { email } });
+    return row ? this.toDomain(row) : null;
+  }
+
+  async getUserByEmployeeNumber(employeeNumber: string): Promise<UserDomain | null> {
+    const row = await this.userRepository.findOne({ where: { employeeNumber } });
     return row ? this.toDomain(row) : null;
   }
 

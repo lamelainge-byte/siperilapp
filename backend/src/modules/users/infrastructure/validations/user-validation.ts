@@ -27,6 +27,7 @@ const createSchema = Joi.object({
     'string.min': 'La empresa es obligatoria',
     'any.required': 'La empresa es obligatoria',
   }),
+  employeeNumber: Joi.string().trim().min(1).max(30).pattern(/^[A-Za-z0-9-]+$/).allow(null),
   role: Joi.string().valid('worker', 'admin').default('worker'),
   status: Joi.number().valid(0, 1).default(1),
 }).unknown(false);
@@ -36,6 +37,7 @@ const updateSchema = Joi.object({
   email: Joi.string().trim().email({ tlds: { allow: false } }),
   password: Joi.string().min(6).pattern(passwordPattern),
   company: Joi.string().trim().min(2),
+  employeeNumber: Joi.string().trim().min(1).max(30).pattern(/^[A-Za-z0-9-]+$/).allow(null),
   role: Joi.string().valid('worker', 'admin'),
   status: Joi.number().valid(0, 1),
 })

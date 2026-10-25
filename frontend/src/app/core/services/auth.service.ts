@@ -48,6 +48,7 @@ export class AuthService {
     name: string;
     email: string;
     company: string;
+    employeeNumber: string;
     password: string;
   }): Promise<void> {
     await firstValueFrom(this.http.post(`${environment.apiUrl}/auth/register`, payload));

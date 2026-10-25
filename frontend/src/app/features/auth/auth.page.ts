@@ -31,14 +31,15 @@ import { SiperilLogoComponent } from '../../shared/brand/siperil-logo.component'
   ],
 })
 export class AuthPage {
-  isLogin = true;
-  loading = false;
+  isLogin: boolean = true;
+  loading: boolean = false;
 
   form = this.fb.nonNullable.group({
     name: [''],
     // correo y clave siempre se validan, nombre y empresa solo en registro
     email: ['', [Validators.required, Validators.email]],
     company: [''],
+    employeeNumber: [''],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
@@ -53,16 +54,20 @@ export class AuthPage {
     this.isLogin = !this.isLogin;
     const name = this.form.controls.name;
     const company = this.form.controls.company;
+    const employeeNumber = this.form.controls.employeeNumber;
     if (this.isLogin) {
       name.clearValidators();
       company.clearValidators();
+      employeeNumber.clearValidators();
     } else {
-      // en registro nombre y empresa pasan a ser obligatorios
+      // en registro nombre, empresa y numero pasan a ser obligatorios
       name.setValidators([Validators.required, Validators.minLength(2)]);
       company.setValidators([Validators.required, Validators.minLength(2)]);
+      employeeNumber.setValidators([Validators.required, Validators.minLength(1), Validators.maxLength(30)]);
     }
     name.updateValueAndValidity();
     company.updateValueAndValidity();
+    employeeNumber.updateValueAndValidity();
   }
 
   async submit(): Promise<void> {
@@ -72,7 +77,7 @@ export class AuthPage {
       return;
     }
     this.loading = true;
-    const { name, email, company, password } = this.form.getRawValue();
+    const { name, email, company, employeeNumber, password } = this.form.getRawValue();
     try {
       if (this.isLogin) {
         // login guarda la sesion y entra al inicio reemplazando el historial
@@ -86,7 +91,7 @@ export class AuthPage {
         await this.router.navigateByUrl('/home', { replaceUrl: true });
       } else {
         // el registro no abre sesion, vuelve al formulario de login
-        await this.auth.register({ name, email, company, password });
+        await this.auth.register({ name, email, company, employeeNumber, password });
         const t = await this.toast.create({
           message: 'Cuenta creada. Ya puedes iniciar sesión.',
           duration: 2500,

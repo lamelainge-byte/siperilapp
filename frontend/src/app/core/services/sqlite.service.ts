@@ -73,7 +73,8 @@ const SCHEMA = `
     name TEXT,
     email TEXT,
     company TEXT,
-    role TEXT
+    role TEXT,
+    employee_number TEXT
   );
 `;
 
@@ -195,8 +196,8 @@ export class SqliteService {
       return;
     }
     await this.run(
-      `INSERT OR REPLACE INTO user_profile (id, name, email, company, role) VALUES (?, ?, ?, ?, ?);`,
-      [user.id, user.name, user.email, user.company, user.role],
+      `INSERT OR REPLACE INTO user_profile (id, name, email, company, role, employee_number) VALUES (?, ?, ?, ?, ?, ?);`,
+      [user.id, user.name, user.email, user.company, user.role, user.employeeNumber ?? null],
     );
     await this.persistWeb();
   }
@@ -242,6 +243,7 @@ export class SqliteService {
     // recupera la base wasm guardada o crea una vacia y aplica las tablas
     this.sqlJsDb = saved ? new SQL.Database(saved) : new SQL.Database();
     this.sqlJsDb.run(SCHEMA);
+    this.addProfileColumnWeb();
     await this.persistWeb();
   }
 
@@ -255,6 +257,19 @@ export class SqliteService {
     }
     await this.nativeDb.open();
     await this.nativeDb.execute(SCHEMA);
+    try {
+      await this.nativeDb.execute('ALTER TABLE user_profile ADD COLUMN employee_number TEXT');
+    } catch {
+      // la columna ya existe en un celular que abrio la app antes
+    }
+  }
+
+  private addProfileColumnWeb(): void {
+    try {
+      this.sqlJsDb?.run('ALTER TABLE user_profile ADD COLUMN employee_number TEXT');
+    } catch {
+      // la columna ya existe en la copia local
+    }
   }
 
   private async ensure(): Promise<boolean> {
