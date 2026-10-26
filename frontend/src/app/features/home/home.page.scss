@@ -1,3 +1,38 @@
+.home-banner {
+  margin: 2px 0 18px;
+  padding: 16px 16px 14px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid var(--siperil-border);
+  border-left: 5px solid var(--siperil-orange);
+  box-shadow: 0 8px 22px rgba(22, 22, 22, 0.05);
+}
+
+.home-kicker {
+  margin: 0 0 4px;
+  color: var(--siperil-orange);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.home-banner h1 {
+  margin: 0 0 4px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--siperil-dark);
+  overflow-wrap: break-word;
+}
+
+.home-banner p {
+  margin: 0;
+  color: var(--siperil-muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
 .welcome {
   display: flex;
   flex-direction: column;

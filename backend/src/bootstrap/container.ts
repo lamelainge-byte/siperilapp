@@ -1,5 +1,7 @@
 import type { AuthUseCases } from '../modules/auth/application/AuthUseCases.js';
 import { GetCurrentUser } from '../modules/auth/application/use-cases/GetCurrentUser.js';
+import { AccessLogAdapter } from '../modules/auth/infrastructure/adapters/AccessLogAdapter.js';
+import { ListAccessLogs } from '../modules/auth/application/use-cases/ListAccessLogs.js';
 import { LoginUser } from '../modules/auth/application/use-cases/LoginUser.js';
 import { LogoutUser } from '../modules/auth/application/use-cases/LogoutUser.js';
 import { RefreshSession } from '../modules/auth/application/use-cases/RefreshSession.js';
@@ -41,13 +43,14 @@ export type AppContainer = {
   siteUseCases: SiteUseCases;
 };
 
-// arma los casos de uso con base de datos, jwt, bcrypt, clima y correo
+// se llama despues de abrir la base, aqui se enchufan los adaptadores a los casos de uso
 export function buildContainer(): AppContainer {
-  const users = new UserAdapter();
-  const reports = new ReportAdapter();
-  const sites = new SiteAdapter();
-  const refreshTokens = new RefreshTokenAdapter();
-  const hasher = new BcryptHasher();
+  const users = new UserAdapter(); // habla con la tabla user usando appdatasource
+  const reports = new ReportAdapter(); // habla con la tabla report
+  const sites = new SiteAdapter(); // habla con la tabla site
+  const refreshTokens = new RefreshTokenAdapter(); // habla con refreshtoken
+  const accessLogs = new AccessLogAdapter();
+  const hasher = new BcryptHasher(); // hashea y compara claves; no toca la base
   const tokens = new JwtTokenAdapter({
     accessSecret: envs.jwtAccessSecret, // firma del access token
     accessExpires: envs.jwtAccessExpires,
@@ -68,11 +71,12 @@ export function buildContainer(): AppContainer {
       deleteUser: new DeleteUser(users),
     },
     authUseCases: {
-      registerUser: new RegisterUser(users, hasher),
-      loginUser: new LoginUser(users, hasher, tokens),
+      registerUser: new RegisterUser(users, hasher, accessLogs),
+      loginUser: new LoginUser(users, hasher, tokens, accessLogs),
       refreshSession: new RefreshSession(tokens),
       logoutUser: new LogoutUser(tokens),
       getCurrentUser: new GetCurrentUser(users),
+      listAccessLogs: new ListAccessLogs(accessLogs),
     },
     reportUseCases: {
       listReports: new ListReports(reports, publicBaseUrl),

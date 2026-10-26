@@ -3,13 +3,13 @@ import type { PasswordHasher } from '../../domain/ports/HasherPort.js';
 
 // la contraseña se guarda hasheada y nunca en texto plano
 export class BcryptHasher implements PasswordHasher {
-  constructor(private readonly rounds = 12) {} // 12 vueltas de bcrypt encarecen un ataque de fuerza bruta
+  constructor(private readonly rounds: number = 12) {} // 12 vueltas de bcrypt encarecen un ataque de fuerza bruta
 
-  hash(plain: string) {
+  hash(plain: string): Promise<string> {
     return bcrypt.hash(plain, this.rounds);
   }
 
-  compare(plain: string, hash: string) {
+  compare(plain: string, hash: string): Promise<boolean> {
     return bcrypt.compare(plain, hash);
   }
 }

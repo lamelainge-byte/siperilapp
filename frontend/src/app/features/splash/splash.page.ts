@@ -12,7 +12,7 @@ import { SiperilLogoComponent } from '../../shared/brand/siperil-logo.component'
   imports: [IonContent, IonSpinner, SiperilLogoComponent],
 })
 export class SplashPage implements OnInit {
-  private booted = false;
+  private booted: boolean = false;
 
   constructor(
     private router: Router,

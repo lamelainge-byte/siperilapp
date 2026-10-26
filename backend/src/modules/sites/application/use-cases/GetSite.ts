@@ -1,5 +1,6 @@
 import { AppError } from '../../../../shared/utils/errors.js';
 import type { Actor } from '../../../../shared/utils/types.js';
+import type { Site } from '../../domain/entities/Site.js';
 import type { UserPort } from '../../../users/domain/ports/UserPort.js';
 import type { SitePort } from '../../domain/ports/SitePort.js';
 import { companyOf } from './site-helpers.js';
@@ -10,7 +11,7 @@ export class GetSite {
     private readonly users: UserPort,
   ) {}
 
-  async execute(id: string, actor: Actor) {
+  async execute(id: string, actor: Actor): Promise<Site> {
     const site = await this.sites.findById(id);
     if (!site) throw new AppError(404, 'Sitio no encontrado');
     if (actor.role !== 'admin' && site.company !== (await companyOf(this.users, actor))) {

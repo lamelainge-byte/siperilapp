@@ -1,7 +1,7 @@
 import { AppError } from '../../../../shared/utils/errors.js';
 import type { Actor, ReportStatus } from '../../../../shared/utils/types.js';
 import type { ReportPort } from '../../domain/ports/ReportPort.js';
-import { toPublicReport } from './report-helpers.js';
+import { toPublicReport, type PublicReport } from './report-helpers.js';
 
 export class ResolveReport {
   constructor(
@@ -9,7 +9,7 @@ export class ResolveReport {
     private readonly publicBaseUrl: string,
   ) {}
 
-  async execute(id: string, actor: Actor) {
+  async execute(id: string, actor: Actor): Promise<PublicReport> {
     if (actor.role !== 'admin') {
       // la ruta ya exige admin, esta comprobacion es una segunda barrera
       throw new AppError(403, 'Solo un administrador puede resolver reportes');

@@ -17,7 +17,14 @@ import {
 } from '@ionic/angular';
 import { DeviceService } from '../../core/services/device.service';
 import { ReportsService } from '../../core/services/reports.service';
-import { REPORT_LABELS, type ReportType } from '../../models/siperil.models';
+import {
+  DAMAGE_KIND_LABELS,
+  EQUIPMENT_LABELS,
+  REPORT_LABELS,
+  type EquipmentDamageKind,
+  type HeightEquipment,
+  type ReportType,
+} from '../../models/siperil.models';
 import { SiperilHeaderComponent } from '../../shared/layout/siperil-header.component';
 
 @Component({
@@ -44,7 +51,7 @@ export class ReportFormPage implements OnInit {
   preview: string | null = null;
   imageBlob: Blob | null = null;
   weatherHint: string | null = null;
-  loading = false;
+  loading: boolean = false;
 
   form = this.fb.nonNullable.group({
     // la descripcion es el unico campo siempre obligatorio
@@ -53,6 +60,9 @@ export class ReportFormPage implements OnInit {
     incidentTime: [''],
     shift: [''],
     place: [''],
+    office: [''],
+    equipmentType: [''],
+    damageKind: [''],
     latitude: [''],
     longitude: [''],
   });
@@ -83,22 +93,47 @@ export class ReportFormPage implements OnInit {
     return this.reportType !== 'unsafe_condition';
   }
 
+  get isHeightEquipment(): boolean {
+    return this.reportType === 'height_equipment';
+  }
+
+  get equipmentOptions(): HeightEquipment[] {
+    return Object.keys(EQUIPMENT_LABELS) as HeightEquipment[];
+  }
+
+  get damageOptions(): EquipmentDamageKind[] {
+    return Object.keys(DAMAGE_KIND_LABELS) as EquipmentDamageKind[];
+  }
+
+  equipmentLabel(value: HeightEquipment): string {
+    return EQUIPMENT_LABELS[value];
+  }
+
+  damageLabel(value: EquipmentDamageKind): string {
+    return DAMAGE_KIND_LABELS[value];
+  }
+
   async ngOnInit(): Promise<void> {
     // al crear llega el tipo y al editar llega el id del reporte
     this.reportType = (this.route.snapshot.paramMap.get('type') as ReportType) ?? 'unsafe_condition';
     this.reportId = this.route.snapshot.paramMap.get('id');
+    this.applyTypeValidators();
     if (this.reportId) {
       const overlay = await this.loadingCtrl.create({ message: 'Cargando reporte…' });
       await overlay.present();
       try {
         const report = await this.reports.get(this.reportId);
         this.reportType = report.reportType;
+        this.applyTypeValidators();
         this.form.patchValue({
           description: report.description,
           incidentDate: report.incidentDate?.slice(0, 10) ?? '',
           incidentTime: report.incidentTime ?? '',
           shift: report.shift ?? '',
           place: report.place ?? '',
+          office: report.office ?? '',
+          equipmentType: report.equipmentType ?? '',
+          damageKind: report.damageKind ?? '',
           latitude: report.latitude != null ? String(report.latitude) : '',
           longitude: report.longitude != null ? String(report.longitude) : '',
         });
@@ -108,6 +143,26 @@ export class ReportFormPage implements OnInit {
         await overlay.dismiss();
       }
     }
+  }
+
+  private applyTypeValidators(): void {
+    const date = this.form.controls.incidentDate;
+    const place = this.form.controls.place;
+    const office = this.form.controls.office;
+    const equipmentType = this.form.controls.equipmentType;
+    const damageKind = this.form.controls.damageKind;
+    if (this.isHeightEquipment) {
+      date.setValidators([Validators.required]);
+      place.setValidators([Validators.required, Validators.minLength(2)]);
+      office.setValidators([Validators.required, Validators.minLength(2)]);
+      equipmentType.setValidators([Validators.required]);
+      damageKind.setValidators([Validators.required]);
+    }
+    date.updateValueAndValidity();
+    place.updateValueAndValidity();
+    office.updateValueAndValidity();
+    equipmentType.updateValueAndValidity();
+    damageKind.updateValueAndValidity();
   }
 
   async capturePhoto(): Promise<void> {
@@ -191,6 +246,9 @@ export class ReportFormPage implements OnInit {
       incidentTime: v.incidentTime || null,
       shift: v.shift || null,
       place: v.place || null,
+      office: v.office || null,
+      equipmentType: v.equipmentType || null,
+      damageKind: v.damageKind || null,
       latitude: v.latitude ? Number(v.latitude) : null,
       longitude: v.longitude ? Number(v.longitude) : null, // el backend consulta el clima con estas coordenadas
       image: this.imageBlob,

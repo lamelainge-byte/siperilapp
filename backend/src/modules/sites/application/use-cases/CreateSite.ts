@@ -1,4 +1,5 @@
 import type { Actor } from '../../../../shared/utils/types.js';
+import type { Site } from '../../domain/entities/Site.js';
 import type { SitePort } from '../../domain/ports/SitePort.js';
 import type { CreateSiteDto } from '../dto/SiteDto.js';
 import { assertAdmin } from './site-helpers.js';
@@ -6,7 +7,7 @@ import { assertAdmin } from './site-helpers.js';
 export class CreateSite {
   constructor(private readonly sites: SitePort) {}
 
-  async execute(actor: Actor, input: CreateSiteDto) {
+  async execute(actor: Actor, input: CreateSiteDto): Promise<Site> {
     assertAdmin(actor);
     // un sitio nace activo si no dicen lo contrario
     return this.sites.create({

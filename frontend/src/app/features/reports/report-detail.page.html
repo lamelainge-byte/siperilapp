@@ -1,18 +1,21 @@
 <app-siperil-header title="Detalle del reporte" [showBack]="true" defaultHref="/reports"></app-siperil-header>
 
 <ion-content>
-  <div class="siperil-page">
+  <div class="siperil-page detail">
     @if (loadError) {
-      <article class="siperil-card">
-        <div class="siperil-card-head"><h2>No se pudo cargar</h2></div>
-        <div class="siperil-card-body">
-          <p class="empty-copy">El reporte no está disponible en este momento.</p>
-        </div>
+      <article class="empty-panel">
+        <h2>No se pudo cargar</h2>
+        <p>El reporte no está disponible en este momento.</p>
+        <ion-button routerLink="/reports">Volver a mis reportes</ion-button>
       </article>
     } @else if (report) {
-      <article class="siperil-card">
-        <div class="siperil-card-head">
-          <h2>{{ labels[report.reportType] }}</h2>
+      <header class="detail-hero" [class.is-resolved]="report.status === 'resolved'">
+        <div class="detail-top">
+          <span class="type-icon"><ion-icon [name]="typeIcon(report.reportType)"></ion-icon></span>
+          <div class="detail-id">
+            <p class="detail-kicker">Industrias SIPERIL S.A.S.</p>
+            <h1>{{ labels[report.reportType] }}</h1>
+          </div>
           <span
             class="siperil-badge"
             [class.resolved]="report.status === 'resolved'"
@@ -21,30 +24,89 @@
             {{ report.status === 'resolved' ? 'Resuelto' : 'Pendiente' }}
           </span>
         </div>
-        <div class="siperil-card-body">
-          <dl class="detail-list">
-            <div><dt>Autor</dt><dd>{{ report.user?.name || '—' }}</dd></div>
-            <div><dt>Empresa</dt><dd>{{ report.company }}</dd></div>
-            <div><dt>Lugar</dt><dd>{{ report.place || '—' }}</dd></div>
-            <div><dt>Fecha</dt><dd>{{ report.incidentDate || report.createdAt }}</dd></div>
-            <div><dt>Hora</dt><dd>{{ report.incidentTime || '—' }}</dd></div>
-            <div><dt>Turno</dt><dd>{{ report.shift ? report.shift.charAt(0).toUpperCase() + report.shift.slice(1) : '—' }}</dd></div>
-            @if (report.weatherSummary) {
-              <div><dt>Clima</dt><dd>{{ report.weatherSummary }}</dd></div>
-            }
-          </dl>
-          <p class="card-desc">{{ report.description }}</p>
-          @if (report.imageUrl) {
-            <img [src]="report.imageUrl" alt="Evidencia fotográfica del reporte" class="preview-photo" />
-          }
-          @if (report.status === 'pending') {
-            <ion-button expand="block" [routerLink]="['/reports', report.id, 'edit']">Editar este reporte</ion-button>
-          }
-          @if (report.status === 'pending' && auth.isAdmin()) {
-            <ion-button expand="block" color="success" (click)="markResolved()">Marcar como resuelto</ion-button>
+        <p class="lead">{{ report.description }}</p>
+      </header>
+
+      <section class="fact-grid" aria-label="Datos del reporte">
+        <article>
+          <span>Autor</span>
+          <strong>{{ report.user?.name || '—' }}</strong>
+        </article>
+        <article>
+          <span>Empresa</span>
+          <strong>{{ report.company }}</strong>
+        </article>
+        <article>
+          <span>Lugar</span>
+          <strong>{{ report.place || '—' }}</strong>
+        </article>
+        <article>
+          <span>Fecha</span>
+          <strong>{{ when(report.incidentDate || report.createdAt) }}</strong>
+        </article>
+        @if (clock(report.incidentTime); as hour) {
+          <article>
+            <span>Hora</span>
+            <strong>{{ hour }}</strong>
+          </article>
+        }
+        @if (shiftLabel(report.shift); as shift) {
+          <article>
+            <span>Turno</span>
+            <strong>{{ shift }}</strong>
+          </article>
+        }
+        @if (report.reportType === 'height_equipment') {
+          <article>
+            <span>Oficina</span>
+            <strong>{{ report.office || '—' }}</strong>
+          </article>
+          <article>
+            <span>Tipo de equipo</span>
+            <strong>{{ equipmentLabel(report.equipmentType) }}</strong>
+          </article>
+          <article>
+            <span>Tipo de reporte</span>
+            <strong>{{ damageLabel(report.damageKind) }}</strong>
+          </article>
+        }
+        @if (report.weatherSummary) {
+          <article>
+            <span>Clima</span>
+            <strong>{{ report.weatherSummary }}</strong>
+          </article>
+        }
+        @if (report.status === 'resolved') {
+          <article>
+            <span>Cerrado por</span>
+            <strong>{{ report.resolvedBy?.name || '—' }}</strong>
+          </article>
+          <article>
+            <span>Fecha de cierre</span>
+            <strong>{{ when(report.resolvedAt) }}</strong>
+          </article>
+        }
+      </section>
+
+      @if (mapsUrl(report); as map) {
+        <a class="map-link" [href]="map" target="_blank" rel="noopener">Ver ubicación en el mapa</a>
+      }
+
+      @if (report.imageUrl) {
+        <figure class="evidence">
+          <img [src]="report.imageUrl" alt="Evidencia fotográfica del reporte" />
+          <figcaption>Evidencia fotográfica</figcaption>
+        </figure>
+      }
+
+      @if (report.status === 'pending') {
+        <div class="actions" [class.single]="!auth.isAdmin()">
+          <ion-button fill="outline" [routerLink]="['/reports', report.id, 'edit']">Editar este reporte</ion-button>
+          @if (auth.isAdmin()) {
+            <ion-button color="success" (click)="markResolved()">Marcar como resuelto</ion-button>
           }
         </div>
-      </article>
+      }
     }
   </div>
 </ion-content>

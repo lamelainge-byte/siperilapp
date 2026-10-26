@@ -5,6 +5,7 @@ import {
   AlertController,
   IonButton,
   IonContent,
+  IonIcon,
   IonItem,
   IonRefresher,
   IonRefresherContent,
@@ -14,6 +15,20 @@ import {
   LoadingController,
   ToastController,
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  alertCircleOutline,
+  bicycleOutline,
+  bodyOutline,
+  businessOutline,
+  calendarOutline,
+  checkmarkCircleOutline,
+  constructOutline,
+  layersOutline,
+  medkitOutline,
+  timeOutline,
+} from 'ionicons/icons';
+import { AuthService } from '../../core/services/auth.service';
 import { ReportsService } from '../../core/services/reports.service';
 import {
   REPORT_LABELS,
@@ -27,6 +42,8 @@ type DateFilter = 'all' | 'today' | '7d' | '30d';
 interface CountRow {
   key: string;
   label: string;
+  short: string;
+  icon: string;
   count: number;
   percent: number;
 }
@@ -43,6 +60,7 @@ interface CountRow {
     IonSelect,
     IonSelectOption,
     IonButton,
+    IonIcon,
     IonSkeletonText,
     IonRefresher,
     IonRefresherContent,
@@ -55,24 +73,62 @@ export class AdminPage {
   companies: string[] = [];
   company: string | null = null;
   dateFilter: DateFilter = 'all';
-  total = 0;
-  pending = 0;
-  resolved = 0;
-  pendingPercent = 0;
-  resolvedPercent = 0;
+  total: number = 0;
+  pending: number = 0;
+  resolved: number = 0;
+  pendingPercent: number = 0;
+  resolvedPercent: number = 0;
   typeSummary: CountRow[] = [];
   companySummary: CountRow[] = [];
-  loading = true;
+  loading: boolean = true;
   errorMessage: string | null = null;
-  labels = REPORT_LABELS;
+  labels: Record<ReportType, string> = REPORT_LABELS;
+
+  private readonly typeMeta: Record<ReportType, { short: string; icon: string }> = {
+    unsafe_condition: { short: 'Actos y condiciones', icon: 'alert-circle-outline' },
+    work_accident: { short: 'Accidente de trabajo', icon: 'medkit-outline' },
+    maintenance: { short: 'Mantenimiento', icon: 'construct-outline' },
+    road_accident: { short: 'Accidente vial', icon: 'bicycle-outline' },
+    height_equipment: { short: 'Equipos en alturas', icon: 'body-outline' },
+  };
 
   constructor(
+    public auth: AuthService,
     private reportsApi: ReportsService,
     private toast: ToastController,
     private loadingCtrl: LoadingController,
     private alert: AlertController,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) {
+    addIcons({
+      layersOutline,
+      timeOutline,
+      checkmarkCircleOutline,
+      businessOutline,
+      calendarOutline,
+      alertCircleOutline,
+      medkitOutline,
+      constructOutline,
+      bicycleOutline,
+      bodyOutline,
+    });
+  }
+
+  when(report: Report): string {
+    const date = this.reportDate(report);
+    if (Number.isNaN(date.getTime())) {
+      return '—';
+    }
+    return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  initials(name?: string): string {
+    const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) {
+      return '—';
+    }
+    return parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('');
+  }
 
   async ionViewWillEnter(): Promise<void> {
     await this.load();
@@ -202,7 +258,15 @@ export class AdminPage {
     const types = Object.keys(this.labels) as ReportType[];
     return types.map((type) => {
       const count = this.filtered.filter((r) => r.reportType === type).length;
-      return { key: type, label: this.labels[type], count, percent: this.percent(count) };
+      const meta = this.typeMeta[type];
+      return {
+        key: type,
+        label: this.labels[type],
+        short: meta.short,
+        icon: meta.icon,
+        count,
+        percent: this.percent(count),
+      };
     });
   }
 
@@ -216,6 +280,8 @@ export class AdminPage {
       .map(([company, count]) => ({
         key: company,
         label: company,
+        short: company,
+        icon: 'business-outline',
         count,
         percent: this.percent(count),
       }));

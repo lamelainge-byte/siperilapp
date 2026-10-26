@@ -1,3 +1,4 @@
+// documentacion en /api/docs, no ejecuta logica: solo describe las rutas para probarlas en el navegador
 import type { Application } from 'express';
 import swaggerUi from 'swagger-ui-express';
 

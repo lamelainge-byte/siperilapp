@@ -1,3 +1,4 @@
+// express, middlewares() prepara seguridad y json, routes() cuelga /api y al final el manejador de errores
 import cors from 'cors';
 import express, { type Application } from 'express';
 import helmet from 'helmet';

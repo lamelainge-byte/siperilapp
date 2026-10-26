@@ -5,7 +5,7 @@ import type { ReportPort } from '../../domain/ports/ReportPort.js';
 export class DeleteReport {
   constructor(private readonly reports: ReportPort) {}
 
-  async execute(id: string, actor: Actor) {
+  async execute(id: string, actor: Actor): Promise<void> {
     const report = await this.reports.findById(id);
     if (!report) throw new AppError(404, 'Reporte no encontrado');
     // el trabajador borra solo los suyos y el admin cualquiera

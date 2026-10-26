@@ -1,3 +1,4 @@
+// tabla site, un sitio tiene muchos reportes, active en false lo oculta sin borrarlo
 import {
   Column,
   CreateDateColumn,

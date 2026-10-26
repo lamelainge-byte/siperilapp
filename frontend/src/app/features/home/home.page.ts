@@ -8,6 +8,7 @@ import {
   constructOutline,
   medkitOutline,
   shieldCheckmarkOutline,
+  bodyOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../core/services/auth.service';
 import type { ReportType } from '../../models/siperil.models';
@@ -26,6 +27,7 @@ export class HomePage {
     { type: 'work_accident', label: 'Accidente de trabajo', icon: 'medkit-outline' },
     { type: 'maintenance', label: 'Registro de mantenimiento', icon: 'construct-outline' },
     { type: 'road_accident', label: 'Accidente vial', icon: 'bicycle-outline' },
+    { type: 'height_equipment', label: 'Daño de equipos de trabajo en alturas', icon: 'body-outline' },
   ];
 
   constructor(public auth: AuthService) {
@@ -35,6 +37,7 @@ export class HomePage {
       constructOutline,
       bicycleOutline,
       shieldCheckmarkOutline,
+      bodyOutline,
     });
   }
 }

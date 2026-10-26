@@ -7,7 +7,8 @@ import { Component, Input } from '@angular/core';
 })
 export class SiperilLogoComponent {
   // compacto para el header de android
-  @Input() compact = false;
-  @Input() dark = false;
-  broken = false;
+  @Input() compact: boolean = false;
+  @Input() hero: boolean = false;
+  @Input() dark: boolean = false;
+  broken: boolean = false;
 }

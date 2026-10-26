@@ -1,13 +1,21 @@
 <app-siperil-header [title]="title" [showBack]="true"></app-siperil-header>
 
 <ion-content>
-  <div class="siperil-page">
-    <form class="form-actions" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="siperil-page form-page">
+    <header class="form-hero">
+      <p class="form-kicker">Industrias SIPERIL S.A.S.</p>
+      <h1>{{ reportId ? 'Editar reporte' : 'Nuevo reporte' }}</h1>
+      <p>{{ title }}</p>
+    </header>
+    <form class="form-sheet" [formGroup]="form" (ngSubmit)="submit()">
       @if (needsDateTime) {
         <ion-item>
           <ion-input type="date" label="Fecha" labelPlacement="floating" formControlName="incidentDate"></ion-input>
         </ion-item>
-        @if (reportType !== 'maintenance') {
+        @if (isHeightEquipment && form.controls.incidentDate.touched && form.controls.incidentDate.invalid) {
+          <ion-note color="danger">Ingresa la fecha.</ion-note>
+        }
+        @if (reportType !== 'maintenance' && reportType !== 'height_equipment') {
           <ion-item>
             <ion-input type="time" label="Hora" labelPlacement="floating" formControlName="incidentTime"></ion-input>
           </ion-item>
@@ -24,9 +32,44 @@
         </ion-item>
       }
 
+      @if (isHeightEquipment) {
+        <ion-item>
+          <ion-select label="Tipo de equipo" labelPlacement="floating" formControlName="equipmentType" interface="action-sheet">
+            @for (item of equipmentOptions; track item) {
+              <ion-select-option [value]="item">{{ equipmentLabel(item) }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        @if (form.controls.equipmentType.touched && form.controls.equipmentType.invalid) {
+          <ion-note color="danger">Selecciona el tipo de equipo.</ion-note>
+        }
+        <ion-item>
+          <ion-select label="Tipo de reporte" labelPlacement="floating" formControlName="damageKind" interface="action-sheet">
+            @for (item of damageOptions; track item) {
+              <ion-select-option [value]="item">{{ damageLabel(item) }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        @if (form.controls.damageKind.touched && form.controls.damageKind.invalid) {
+          <ion-note color="danger">Selecciona si es daño, desgaste o pérdida.</ion-note>
+        }
+      }
+
       <ion-item>
         <ion-input label="Lugar" labelPlacement="floating" formControlName="place"></ion-input>
       </ion-item>
+      @if (isHeightEquipment && form.controls.place.touched && form.controls.place.invalid) {
+        <ion-note color="danger">Ingresa el lugar.</ion-note>
+      }
+
+      @if (isHeightEquipment) {
+        <ion-item>
+          <ion-input label="Oficina" labelPlacement="floating" formControlName="office"></ion-input>
+        </ion-item>
+        @if (form.controls.office.touched && form.controls.office.invalid) {
+          <ion-note color="danger">Ingresa la oficina.</ion-note>
+        }
+      }
 
       <ion-item>
         <ion-textarea

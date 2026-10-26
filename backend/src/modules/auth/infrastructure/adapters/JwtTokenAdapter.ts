@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'crypto';
 import jwt, { type SignOptions } from 'jsonwebtoken';
 import type { Actor } from '../../../../shared/utils/types.js';
 import type { UserPort } from '../../../users/domain/ports/UserPort.js';
+import type { User } from '../../../users/domain/entities/User.js';
 import type { RefreshTokenPort } from '../../domain/ports/RefreshTokenPort.js';
 import type { TokenPort } from '../../domain/ports/TokenPort.js';
 
@@ -38,7 +39,11 @@ export class JwtTokenAdapter implements TokenPort {
     return raw;
   }
 
-  async rotateRefresh(rawToken: string) {
+  async rotateRefresh(rawToken: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: User;
+  } | null> {
     const stored = await this.deps.tokens.findValidByHash(hashToken(rawToken));
     if (!stored || stored.expiresAt < new Date()) return null;
     const user = await this.deps.users.getUserById(stored.userId);
@@ -52,11 +57,11 @@ export class JwtTokenAdapter implements TokenPort {
     };
   }
 
-  async revokeRefresh(rawToken: string) {
+  async revokeRefresh(rawToken: string): Promise<void> {
     await this.deps.tokens.revokeByHash(hashToken(rawToken));
   }
 
-  async revokeAll(userId: string) {
+  async revokeAll(userId: string): Promise<void> {
     await this.deps.tokens.revokeAllForUser(userId);
   }
 }

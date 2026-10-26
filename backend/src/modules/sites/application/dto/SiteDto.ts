@@ -1,3 +1,4 @@
+// body de crear y editar un sitio: nombre, empresa, direccion, area y si sigue activo
 export type CreateSiteDto = {
   name: string;
   company: string;

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireAuth } from '../../../../shared/middleware/auth.middleware.js';
+import { requireAuth, requireRole } from '../../../../shared/middleware/auth.middleware.js';
 import type { AuthUseCases } from '../../application/AuthUseCases.js';
 import { AuthController } from '../controllers/AuthController.js';
 
@@ -13,5 +13,6 @@ export function AuthRoutes(useCases: AuthUseCases) {
   // cerrar sesion y ver el perfil exigen access token
   router.post('/logout', requireAuth, controller.logout);
   router.get('/me', requireAuth, controller.me);
+  router.get('/ingresos', requireAuth, requireRole('admin'), controller.ingresos);
   return router;
 }

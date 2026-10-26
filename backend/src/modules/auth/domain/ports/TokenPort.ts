@@ -1,3 +1,4 @@
+// contrato de sesion: firmar el access, emitir el refresh, rotarlo y revocarlo
 import type { Actor } from '../../../../shared/utils/types.js';
 import type { User } from '../../../users/domain/entities/User.js';
 

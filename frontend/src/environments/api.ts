@@ -30,14 +30,13 @@ export function apiUrl(): string {
 }
 
 // reescribe la foto al origen que usa este dispositivo
-export function resolveMediaUrl(url: string | null | undefined): string | null {
+export function resolveMediaUrl(url: string | null | undefined, origin = apiOrigin()): string | null {
   if (!url) {
     return null;
   }
   if (url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('capacitor:')) {
     return url;
   }
-  const origin = apiOrigin();
   if (url.startsWith('/')) {
     return `${origin}${url}`;
   }

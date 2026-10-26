@@ -6,7 +6,7 @@ import { assertAdmin } from './site-helpers.js';
 export class DeleteSite {
   constructor(private readonly sites: SitePort) {}
 
-  async execute(id: string, actor: Actor) {
+  async execute(id: string, actor: Actor): Promise<void> {
     assertAdmin(actor);
     const site = await this.sites.findById(id);
     if (!site) throw new AppError(404, 'Sitio no encontrado');

@@ -4,11 +4,13 @@ import { AppError } from '../../../../shared/utils/errors.js';
 import type { PasswordHasher } from '../../../users/domain/ports/HasherPort.js';
 import type { UserPort } from '../../../users/domain/ports/UserPort.js';
 import type { RegisterDto } from '../dto/AuthDto.js';
+import type { AccessLogPort } from '../../domain/ports/AccessLogPort.js';
 
 export class RegisterUser {
   constructor(
     private readonly users: UserPort,
     private readonly hasher: PasswordHasher,
+    private readonly accessLogs: AccessLogPort,
   ) {}
 
   async execute(input: RegisterDto): Promise<{ id: string; email: string; role: Role }> {
@@ -28,6 +30,14 @@ export class RegisterUser {
     });
     const user = await this.users.getUserById(id);
     if (!user) throw new AppError(500, 'No se pudo leer el usuario creado');
+    await this.accessLogs.record({
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      company: user.company,
+      employeeNumber: user.employeeNumber,
+      kind: 'register',
+    });
     return { id: user.id, email: user.email, role: user.role };
   }
 }

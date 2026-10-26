@@ -10,6 +10,7 @@ export class SiteAdapter implements SitePort {
   private readonly reportRepository: Repository<ReportModel>;
 
   constructor() {
+    // misma conexion: un repositorio para sitios y otro para contar reportes ligados
     this.siteRepository = AppDataSource.getRepository(SiteModel);
     this.reportRepository = AppDataSource.getRepository(ReportModel);
   }

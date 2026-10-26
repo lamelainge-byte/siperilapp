@@ -2,13 +2,17 @@
 
 <ion-content>
   <div class="siperil-page">
-    <p class="welcome">
-      <span class="welcome-name">Hola, {{ auth.user()?.name }}.</span>
-      <span class="welcome-hint">Elige el tipo de reporte.</span>
-    </p>
+    <section class="home-banner">
+      <p class="home-kicker">Industrias SIPERIL S.A.S.</p>
+      <h1>Hola, {{ auth.user()?.name }}</h1>
+      <p>Elige el tipo de reporte que vas a registrar.</p>
+    </section>
 
     @if (auth.isAdmin()) {
-      <ion-button expand="block" color="dark" class="admin-entry" routerLink="/admin">
+      <ion-button expand="block" color="dark" class="admin-entry" routerLink="/ingresos">
+        Ingresos
+      </ion-button>
+      <ion-button expand="block" fill="outline" class="admin-entry" routerLink="/admin">
         Panel de administración
       </ion-button>
     }

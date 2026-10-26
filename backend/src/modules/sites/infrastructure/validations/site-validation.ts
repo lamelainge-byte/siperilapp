@@ -1,3 +1,6 @@
+// joi del body de sitios, crea y actualiza
+// direccion o area vacias se guardan como null
+// active puede llegar como boolean o como el texto true o false
 import Joi from 'joi';
 import { throwIfInvalid } from '../../../../shared/utils/joi.js';
 import type { CreateSiteDto, UpdateSiteDto } from '../../application/dto/SiteDto.js';

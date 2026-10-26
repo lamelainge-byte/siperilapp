@@ -4,18 +4,27 @@ import {
   AlertController,
   IonButton,
   IonContent,
-  IonItem,
-  IonLabel,
-  IonList,
+  IonIcon,
   IonRefresher,
   IonRefresherContent,
   IonSkeletonText,
   LoadingController,
   ToastController,
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  alertCircleOutline,
+  bicycleOutline,
+  bodyOutline,
+  constructOutline,
+  medkitOutline,
+} from 'ionicons/icons';
+import { AuthService } from '../../core/services/auth.service';
 import { ReportsService } from '../../core/services/reports.service';
-import { REPORT_LABELS, type Report } from '../../models/siperil.models';
+import { REPORT_LABELS, type Report, type ReportType } from '../../models/siperil.models';
 import { SiperilHeaderComponent } from '../../shared/layout/siperil-header.component';
+
+type StatusFilter = 'all' | 'pending' | 'resolved';
 
 @Component({
   selector: 'app-reports-list',
@@ -24,11 +33,9 @@ import { SiperilHeaderComponent } from '../../shared/layout/siperil-header.compo
   imports: [
     RouterLink,
     IonContent,
+    IonIcon,
     IonRefresher,
     IonRefresherContent,
-    IonList,
-    IonItem,
-    IonLabel,
     IonButton,
     IonSkeletonText,
     SiperilHeaderComponent,
@@ -36,16 +43,61 @@ import { SiperilHeaderComponent } from '../../shared/layout/siperil-header.compo
 })
 export class ReportsListPage implements OnInit {
   reports: Report[] = [];
-  loading = true;
-  labels = REPORT_LABELS;
+  visible: Report[] = [];
+  statusFilter: StatusFilter = 'all';
+  loading: boolean = true;
+  labels: Record<ReportType, string> = REPORT_LABELS;
+
+  private readonly typeIcons: Record<ReportType, string> = {
+    unsafe_condition: 'alert-circle-outline',
+    work_accident: 'medkit-outline',
+    maintenance: 'construct-outline',
+    road_accident: 'bicycle-outline',
+    height_equipment: 'body-outline',
+  };
 
   constructor(
+    public auth: AuthService,
     private reportsApi: ReportsService,
     private alert: AlertController,
     private toast: ToastController,
     private loadingCtrl: LoadingController,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) {
+    addIcons({
+      alertCircleOutline,
+      medkitOutline,
+      constructOutline,
+      bicycleOutline,
+      bodyOutline,
+    });
+  }
+
+  get pendingCount(): number {
+    return this.reports.filter((report) => report.status === 'pending').length;
+  }
+
+  get resolvedCount(): number {
+    return this.reports.filter((report) => report.status === 'resolved').length;
+  }
+
+  setFilter(filter: StatusFilter): void {
+    this.statusFilter = filter;
+    this.applyView();
+    this.cdr.detectChanges();
+  }
+
+  typeIcon(type: ReportType): string {
+    return this.typeIcons[type];
+  }
+
+  when(report: Report): string {
+    const date = new Date(report.incidentDate || report.createdAt);
+    if (Number.isNaN(date.getTime())) {
+      return '—';
+    }
+    return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
 
   ngOnInit(): void {
     void this.load();
@@ -65,6 +117,7 @@ export class ReportsListPage implements OnInit {
     } catch {
       this.reports = [];
     } finally {
+      this.applyView();
       this.loading = false;
       event?.detail.complete();
       this.cdr.detectChanges();
@@ -92,6 +145,7 @@ export class ReportsListPage implements OnInit {
       await this.reportsApi.remove(report.id);
       // saca la fila de la lista sin volver a pedir el api
       this.reports = this.reports.filter((r) => r.id !== report.id);
+      this.applyView();
       const t = await this.toast.create({
         message: 'Reporte eliminado.',
         duration: 1800,
@@ -102,5 +156,12 @@ export class ReportsListPage implements OnInit {
       await overlay.dismiss();
       this.cdr.detectChanges();
     }
+  }
+
+  private applyView(): void {
+    this.visible =
+      this.statusFilter === 'all'
+        ? this.reports
+        : this.reports.filter((report) => report.status === this.statusFilter);
   }
 }

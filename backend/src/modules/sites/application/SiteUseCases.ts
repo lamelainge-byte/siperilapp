@@ -1,3 +1,4 @@
+// paquete de sitios, listar y ver los usa cualquier usuario logueado, crear, editar y borrar son de admin
 import type { CreateSite } from './use-cases/CreateSite.js';
 import type { DeleteSite } from './use-cases/DeleteSite.js';
 import type { GetSite } from './use-cases/GetSite.js';

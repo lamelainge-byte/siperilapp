@@ -44,7 +44,7 @@ import { SiperilLogoComponent } from './shared/brand/siperil-logo.component';
   ],
 })
 export class AppComponent {
-  showNav = false;
+  showNav: boolean = false;
 
   constructor(
     public auth: AuthService,

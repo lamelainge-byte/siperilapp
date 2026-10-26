@@ -5,6 +5,7 @@ import type {
   NewReport,
   ReportListFilter,
   ReportPort,
+  ReportStats,
   ReportUpdates,
 } from '../../domain/ports/ReportPort.js';
 import { ReportModel } from '../persistence/ReportModel.js';
@@ -13,6 +14,7 @@ export class ReportAdapter implements ReportPort {
   private readonly reportRepository: Repository<ReportModel>;
 
   constructor() {
+    // usa la misma conexion appdatasource para leer y guardar reportes
     this.reportRepository = AppDataSource.getRepository(ReportModel);
   }
 
@@ -27,6 +29,9 @@ export class ReportAdapter implements ReportPort {
       incidentTime: row.incidentTime,
       shift: row.shift,
       place: row.place,
+      office: row.office,
+      equipmentType: row.equipmentType,
+      damageKind: row.damageKind,
       siteId: row.siteId,
       latitude: row.latitude,
       longitude: row.longitude,
@@ -92,7 +97,7 @@ export class ReportAdapter implements ReportPort {
     await this.reportRepository.delete({ id });
   }
 
-  async stats(company?: string) {
+  async stats(company?: string): Promise<ReportStats> {
     const where = company ? { company } : {};
     // conteos para el panel: total, pendientes, resueltos y empresas
     const [total, pending, resolved, companies] = await Promise.all([

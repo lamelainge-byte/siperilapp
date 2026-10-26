@@ -1,3 +1,4 @@
+// tabla refreshtoken, guarda el hash del refresh, revokedat con fecha significa que el logout ya lo invalido
 import {
   Column,
   CreateDateColumn,

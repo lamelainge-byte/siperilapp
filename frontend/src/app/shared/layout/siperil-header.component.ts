@@ -9,8 +9,8 @@ import { SiperilLogoComponent } from '../brand/siperil-logo.component';
   imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonBackButton, SiperilLogoComponent],
 })
 export class SiperilHeaderComponent {
-  @Input() title = '';
-  @Input() showMenu = false; // abre el menu lateral
-  @Input() showBack = false; // flecha para volver
-  @Input() defaultHref = '/home'; // destino si no hay historial
+  @Input() title: string = '';
+  @Input() showMenu: boolean = false; // abre el menu lateral
+  @Input() showBack: boolean = false; // flecha para volver
+  @Input() defaultHref: string = '/home'; // destino si no hay historial
 }

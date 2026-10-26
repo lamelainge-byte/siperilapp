@@ -1,3 +1,4 @@
+// contrato de la tabla de refresh: crear, buscar uno no revocado y marcarlo como revocado
 export type StoredRefreshToken = {
   id: string;
   tokenHash: string;

@@ -4,24 +4,59 @@ import {
   AlertController,
   IonButton,
   IonContent,
+  IonIcon,
   LoadingController,
   ToastController,
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  alertCircleOutline,
+  bicycleOutline,
+  bodyOutline,
+  constructOutline,
+  medkitOutline,
+} from 'ionicons/icons';
 import { AuthService } from '../../core/services/auth.service';
 import { ReportsService } from '../../core/services/reports.service';
-import { REPORT_LABELS, type Report } from '../../models/siperil.models';
+import {
+  DAMAGE_KIND_LABELS,
+  EQUIPMENT_LABELS,
+  REPORT_LABELS,
+  type EquipmentDamageKind,
+  type HeightEquipment,
+  type Report,
+  type ReportType,
+} from '../../models/siperil.models';
 import { SiperilHeaderComponent } from '../../shared/layout/siperil-header.component';
 
 @Component({
   selector: 'app-report-detail',
   templateUrl: './report-detail.page.html',
   styleUrls: ['./report-detail.page.scss'],
-  imports: [RouterLink, IonContent, IonButton, SiperilHeaderComponent],
+  imports: [RouterLink, IonContent, IonButton, IonIcon, SiperilHeaderComponent],
 })
 export class ReportDetailPage {
   report: Report | null = null;
-  labels = REPORT_LABELS;
-  loadError = false;
+  labels: Record<ReportType, string> = REPORT_LABELS;
+  loadError: boolean = false;
+
+  private readonly typeIcons: Record<ReportType, string> = {
+    unsafe_condition: 'alert-circle-outline',
+    work_accident: 'medkit-outline',
+    maintenance: 'construct-outline',
+    road_accident: 'bicycle-outline',
+    height_equipment: 'body-outline',
+  };
+
+  equipmentLabel(value: string | null | undefined): string {
+    if (!value) return '—';
+    return EQUIPMENT_LABELS[value as HeightEquipment] ?? value;
+  }
+
+  damageLabel(value: string | null | undefined): string {
+    if (!value) return '—';
+    return DAMAGE_KIND_LABELS[value as EquipmentDamageKind] ?? value;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -31,7 +66,58 @@ export class ReportDetailPage {
     private alert: AlertController,
     private toast: ToastController,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) {
+    addIcons({
+      alertCircleOutline,
+      medkitOutline,
+      constructOutline,
+      bicycleOutline,
+      bodyOutline,
+    });
+  }
+
+  typeIcon(type: ReportType): string {
+    return this.typeIcons[type];
+  }
+
+  when(value: string | null | undefined): string {
+    if (!value) return '—';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      const [year, month, day] = value.split('-').map(Number);
+      return new Date(year, month - 1, day).toLocaleDateString('es-CO', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      });
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString('es-CO', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'America/Bogota',
+    });
+  }
+
+  clock(value: string | null | undefined): string | null {
+    if (!value) return null;
+    const match = value.match(/^(\d{1,2}):(\d{2})/);
+    if (!match) return value;
+    const date = new Date();
+    date.setHours(Number(match[1]), Number(match[2]), 0, 0);
+    return date.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });
+  }
+
+  shiftLabel(value: string | null | undefined): string | null {
+    if (!value) return null;
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  mapsUrl(report: Report): string | null {
+    if (report.latitude == null || report.longitude == null) return null;
+    return `https://www.google.com/maps?q=${report.latitude},${report.longitude}`;
+  }
 
   async ionViewWillEnter(): Promise<void> {
     // cada vez que se abre el detalle se vuelve a pedir el reporte

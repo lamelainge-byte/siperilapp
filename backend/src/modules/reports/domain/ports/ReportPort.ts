@@ -1,3 +1,4 @@
+// contrato de reportes: listar, buscar, crear, editar, borrar y estadisticas
 import type { ReportStatus, ReportType } from '../../../../shared/utils/types.js';
 import type { Report } from '../entities/Report.js';
 
@@ -12,6 +13,9 @@ export type NewReport = {
   incidentTime: string | null;
   shift: string | null;
   place: string | null;
+  office: string | null;
+  equipmentType: string | null;
+  damageKind: string | null;
   siteId: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -26,6 +30,9 @@ export type ReportUpdates = {
   incidentTime?: string | null;
   shift?: string | null;
   place?: string | null;
+  office?: string | null;
+  equipmentType?: string | null;
+  damageKind?: string | null;
   siteId?: string | null;
   latitude?: number | null;
   longitude?: number | null;

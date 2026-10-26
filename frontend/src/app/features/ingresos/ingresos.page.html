@@ -1,0 +1,58 @@
+<app-siperil-header title="Ingresos" [showMenu]="true"></app-siperil-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="siperil-page board">
+    <header class="board-hero">
+      <div>
+        <p class="board-kicker">Industrias SIPERIL S.A.S.</p>
+        <h1>Ingresos</h1>
+        <p>Cada trabajador queda una sola vez: cuando crea su cuenta y la primera vez que entra.</p>
+      </div>
+      <div class="hero-stat">
+        <strong>{{ logs.length }}</strong>
+        <span>trabajadores</span>
+      </div>
+    </header>
+
+    @if (loading) {
+      <p class="welcome-hint">Cargando…</p>
+    } @else if (errorMessage) {
+      <article class="siperil-card">
+        <div class="siperil-card-body">
+          <p class="empty-copy">{{ errorMessage }}</p>
+        </div>
+      </article>
+    } @else if (!logs.length) {
+      <article class="siperil-card">
+        <div class="siperil-card-head"><h2>Sin ingresos</h2></div>
+        <div class="siperil-card-body">
+          <p class="empty-copy">Cuando un trabajador cree su cuenta, aparecerá aquí.</p>
+        </div>
+      </article>
+    } @else {
+      <div class="person-grid">
+        @for (log of logs; track log.id) {
+          <article class="person-card">
+            <div class="person-top">
+              <span class="avatar">{{ initials(log.name) }}</span>
+              <div>
+                <h2>{{ log.name }}</h2>
+                <p>{{ log.email }}</p>
+              </div>
+            </div>
+            <dl>
+              <div><dt>Empresa</dt><dd>{{ log.company }}</dd></div>
+              <div><dt>Número</dt><dd>{{ log.employeeNumber || '—' }}</dd></div>
+              <div><dt>Creó su cuenta</dt><dd>{{ log.registeredAt ? when(log.registeredAt) : '—' }}</dd></div>
+              <div><dt>Inició sesión</dt><dd>{{ log.loggedInAt ? when(log.loggedInAt) : '—' }}</dd></div>
+            </dl>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</ion-content>

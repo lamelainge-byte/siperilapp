@@ -4,7 +4,7 @@ import type { SitePort } from '../../../sites/domain/ports/SitePort.js';
 import type { WeatherPort } from '../../domain/ports/WeatherPort.js';
 import type { ReportPort } from '../../domain/ports/ReportPort.js';
 import type { UpdateReportDto } from '../dto/ReportDto.js';
-import { resolveSiteId, toPublicReport } from './report-helpers.js';
+import { resolveSiteId, toPublicReport, type PublicReport } from './report-helpers.js';
 
 export class UpdateReport {
   constructor(
@@ -14,7 +14,7 @@ export class UpdateReport {
     private readonly publicBaseUrl: string,
   ) {}
 
-  async execute(id: string, actor: Actor, body: UpdateReportDto, imagePath?: string) {
+  async execute(id: string, actor: Actor, body: UpdateReportDto, imagePath?: string): Promise<PublicReport> {
     const report = await this.reports.findById(id);
     if (!report) throw new AppError(404, 'Reporte no encontrado');
     if (actor.role !== 'admin' && report.userId !== actor.id) {
@@ -40,6 +40,9 @@ export class UpdateReport {
         incidentTime: body.incidentTime ?? undefined,
         shift: body.shift ?? undefined,
         place: body.place ?? undefined,
+        office: body.office ?? undefined,
+        equipmentType: body.equipmentType ?? undefined,
+        damageKind: body.damageKind ?? undefined,
         ...(siteId !== undefined ? { siteId } : {}),
         latitude: body.latitude ?? undefined,
         longitude: body.longitude ?? undefined,

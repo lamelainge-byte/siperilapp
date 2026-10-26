@@ -1,3 +1,42 @@
+.settings {
+  width: min(100%, 760px);
+}
+
+.settings-hero {
+  margin-bottom: 14px;
+  padding: 18px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(232, 135, 10, 0.35), transparent 46%),
+    #161616;
+  border-radius: 20px;
+  border-bottom: 4px solid var(--siperil-orange);
+  box-shadow: 0 16px 32px rgba(22, 22, 22, 0.12);
+}
+
+.settings-kicker {
+  margin: 0 0 6px;
+  color: var(--siperil-gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.settings-hero h1 {
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: 1.4rem;
+  letter-spacing: -0.03em;
+}
+
+.settings-hero p {
+  margin: 0;
+  color: #d7d2cb;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .a11y-stack {
   display: flex;
   flex-direction: column;

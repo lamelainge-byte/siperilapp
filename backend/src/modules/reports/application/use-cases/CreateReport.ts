@@ -6,7 +6,7 @@ import type { NotifierPort } from '../../domain/ports/NotifierPort.js';
 import type { WeatherPort } from '../../domain/ports/WeatherPort.js';
 import type { ReportPort } from '../../domain/ports/ReportPort.js';
 import type { CreateReportDto } from '../dto/ReportDto.js';
-import { resolveSiteId, toPublicReport } from './report-helpers.js';
+import { resolveSiteId, toPublicReport, type PublicReport } from './report-helpers.js';
 
 export class CreateReport {
   constructor(
@@ -18,7 +18,7 @@ export class CreateReport {
     private readonly publicBaseUrl: string,
   ) {}
 
-  async execute(actor: Actor, body: CreateReportDto, imagePath?: string) {
+  async execute(actor: Actor, body: CreateReportDto, imagePath?: string): Promise<PublicReport> {
     const dbUser = await this.users.getUserById(actor.id);
     if (!dbUser) throw new AppError(404, 'Usuario no encontrado');
     let weatherSummary: string | null = null;
@@ -35,6 +35,9 @@ export class CreateReport {
       incidentTime: body.incidentTime ?? null,
       shift: body.shift ?? null,
       place: body.place ?? null,
+      office: body.office ?? null,
+      equipmentType: body.equipmentType ?? null,
+      damageKind: body.damageKind ?? null,
       siteId: await resolveSiteId(this.sites, body.siteId, dbUser.company),
       latitude: body.latitude ?? null,
       longitude: body.longitude ?? null,
@@ -47,7 +50,8 @@ export class CreateReport {
       company: dbUser.company,
       description: body.description,
       reportType: body.reportType,
-      date: new Date().toISOString(),
+      place: body.place ?? null,
+      date: new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' }),
     });
     return toPublicReport(report, this.publicBaseUrl);
   }

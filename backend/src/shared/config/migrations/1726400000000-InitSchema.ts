@@ -1,9 +1,12 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
+// corre sola al conectar porque data-source tiene migrationsrun: true
+// up crea el esquema, down lo borraria si se revierte la migracion
 export class InitSchema1726400000000 implements MigrationInterface {
   name = 'InitSchema1726400000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // tres enums de postgresql: rol, tipo de reporte y estado
     await queryRunner.query(`
       DO $$ BEGIN
         CREATE TYPE "Role" AS ENUM ('worker', 'admin');
@@ -23,6 +26,7 @@ export class InitSchema1726400000000 implements MigrationInterface {
       END $$;
     `);
 
+    // tabla de cuentas, el correo es unico, status 1 es activo
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "User" (
         "id" TEXT NOT NULL,
@@ -39,6 +43,7 @@ export class InitSchema1726400000000 implements MigrationInterface {
     await queryRunner.query(`CREATE UNIQUE INDEX IF NOT EXISTS "User_email_key" ON "User"("email")`);
     await queryRunner.query(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "status" INTEGER NOT NULL DEFAULT 1`);
 
+    // sesiones largas, tokenhash nunca es el token en claro
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "RefreshToken" (
         "id" TEXT NOT NULL,
@@ -51,6 +56,7 @@ export class InitSchema1726400000000 implements MigrationInterface {
       )
     `);
 
+    // plantas o areas, active permite desactivar sin borrar
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "Site" (
         "id" TEXT NOT NULL,
@@ -65,6 +71,7 @@ export class InitSchema1726400000000 implements MigrationInterface {
       )
     `);
 
+    // incidentes, nacen en pending, guardan clima, foto y quien los resolvio
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "Report" (
         "id" TEXT NOT NULL,
@@ -93,6 +100,8 @@ export class InitSchema1726400000000 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE "Report" ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP`);
     await queryRunner.query(`ALTER TABLE "Site" ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP`);
 
+    // llaves: borrar un usuario borra sus refresh, un reporte no deja borrar a su autor
+    // si se borra quien resolvio o el sitio, esos campos quedan en null
     await queryRunner.query(`
       DO $$ BEGIN
         ALTER TABLE "RefreshToken"
@@ -129,6 +138,7 @@ export class InitSchema1726400000000 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS "_prisma_migrations"`);
   }
 
+  // down deshace el up: quita llaves, tablas y enums, no se usa en el arranque normal
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "Report" DROP CONSTRAINT IF EXISTS "Report_siteId_fkey"`);
     await queryRunner.query(`ALTER TABLE "Report" DROP CONSTRAINT IF EXISTS "Report_resolvedById_fkey"`);

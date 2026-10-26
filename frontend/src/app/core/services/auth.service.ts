@@ -10,6 +10,17 @@ const ACCESS = 'siperil.access';
 const REFRESH = 'siperil.refresh';
 const USER = 'siperil.user';
 
+export type AccessLog = {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  company: string;
+  employeeNumber: string | null;
+  registeredAt: string | null;
+  loggedInAt: string | null;
+};
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly userSignal = signal<User | null>(this.readUser());
@@ -52,6 +63,10 @@ export class AuthService {
     password: string;
   }): Promise<void> {
     await firstValueFrom(this.http.post(`${environment.apiUrl}/auth/register`, payload));
+  }
+
+  async listIngresos(): Promise<AccessLog[]> {
+    return firstValueFrom(this.http.get<AccessLog[]>(`${environment.apiUrl}/auth/ingresos`));
   }
 
   async login(email: string, password: string): Promise<void> {

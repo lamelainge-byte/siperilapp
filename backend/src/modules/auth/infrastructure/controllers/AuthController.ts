@@ -50,6 +50,19 @@ export class AuthController {
   };
 
   // perfil del usuario que viene en el token
+  ingresos = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const logs = await this.useCases.listAccessLogs.execute({
+        id: req.user!.sub,
+        role: req.user!.role,
+        email: req.user!.email,
+      });
+      return res.status(200).json(logs);
+    } catch (error) {
+      return httpError(res, error);
+    }
+  };
+
   me = async (req: Request, res: Response): Promise<Response> => {
     try {
       return res.status(200).json(await this.useCases.getCurrentUser.execute(req.user!.sub));

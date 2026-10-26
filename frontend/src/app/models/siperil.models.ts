@@ -5,7 +5,20 @@ export type ReportType =
   | 'unsafe_condition'
   | 'work_accident'
   | 'maintenance'
-  | 'road_accident';
+  | 'road_accident'
+  | 'height_equipment';
+
+export type HeightEquipment =
+  | 'harness'
+  | 'positioning_sling'
+  | 'tie_off'
+  | 'carabiner'
+  | 'helmet'
+  | 'pretales'
+  | 'ladder'
+  | 'other';
+
+export type EquipmentDamageKind = 'damage' | 'wear' | 'loss';
 
 export type ReportStatus = 'pending' | 'resolved';
 
@@ -35,6 +48,9 @@ export interface Report {
   incidentTime: string | null;
   shift: string | null;
   place: string | null;
+  office?: string | null;
+  equipmentType?: HeightEquipment | null;
+  damageKind?: EquipmentDamageKind | null;
   latitude: number | null;
   longitude: number | null;
   weatherSummary: string | null; // clima que calculo el backend
@@ -53,4 +69,22 @@ export const REPORT_LABELS: Record<ReportType, string> = {
   work_accident: 'Accidente de trabajo',
   maintenance: 'Registro de mantenimiento',
   road_accident: 'Accidente vial',
+  height_equipment: 'Daño de equipos de trabajo en alturas',
+};
+
+export const EQUIPMENT_LABELS: Record<HeightEquipment, string> = {
+  harness: 'Arnés',
+  positioning_sling: 'Eslinga de posicionamiento',
+  tie_off: 'Tie Off',
+  carabiner: 'Mosquetón',
+  helmet: 'Casco',
+  pretales: 'Pretales',
+  ladder: 'Escalera',
+  other: 'Otro',
+};
+
+export const DAMAGE_KIND_LABELS: Record<EquipmentDamageKind, string> = {
+  damage: 'Daño',
+  wear: 'Desgaste',
+  loss: 'Pérdida',
 };

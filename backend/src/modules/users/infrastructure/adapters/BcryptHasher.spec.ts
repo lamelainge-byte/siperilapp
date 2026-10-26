@@ -1,3 +1,4 @@
+// comprueba que bcrypt no deja la clave en claro
 import { describe, expect, it } from 'vitest';
 import bcrypt from 'bcrypt';
 

@@ -1,3 +1,4 @@
+// tabla report, pertenece a un usuario y, si aplica, a un sitio, la foto es una ruta, no el archivo
 import {
   Column,
   CreateDateColumn,
@@ -18,7 +19,7 @@ export class ReportModel {
 
   @Column({
     type: 'enum',
-    enum: ['unsafe_condition', 'work_accident', 'maintenance', 'road_accident'],
+    enum: ['unsafe_condition', 'work_accident', 'maintenance', 'road_accident', 'height_equipment'],
     enumName: 'ReportType',
   })
   reportType!: ReportType; // acto inseguro, accidente laboral, mantenimiento o vial
@@ -47,6 +48,15 @@ export class ReportModel {
 
   @Column({ type: 'text', nullable: true })
   place!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  office!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  equipmentType!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  damageKind!: string | null;
 
   @Column({ type: 'text', nullable: true })
   siteId!: string | null;

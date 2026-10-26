@@ -1,3 +1,4 @@
+// contrato de sitios, countreports sirve para impedir borrar un sitio que ya tiene incidentes
 import type { Site } from '../entities/Site.js';
 
 export type NewSite = {

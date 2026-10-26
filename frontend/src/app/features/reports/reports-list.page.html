@@ -5,49 +5,120 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="siperil-page">
+  <div class="siperil-page board">
+    <header class="board-hero">
+      <div>
+        <p class="board-kicker">Industrias SIPERIL S.A.S.</p>
+        <h1>Mis reportes</h1>
+        <p>
+          @if (auth.isAdmin()) {
+            Todos los reportes registrados, del más reciente al más antiguo.
+          } @else {
+            Los reportes que has creado, del más reciente al más antiguo.
+          }
+        </p>
+      </div>
+      <div class="hero-stat">
+        <strong>{{ pendingCount }}</strong>
+        <span>pendientes</span>
+      </div>
+    </header>
+
     @if (loading) {
-      <ion-list>
-        @for (i of [1, 2, 3]; track i) {
-          <ion-item>
-            <ion-label>
-              <ion-skeleton-text [animated]="true" style="width: 70%"></ion-skeleton-text>
-              <ion-skeleton-text [animated]="true" style="width: 40%"></ion-skeleton-text>
-            </ion-label>
-          </ion-item>
+      <div class="report-grid">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <ion-skeleton-text [animated]="true" class="skeleton-card"></ion-skeleton-text>
         }
-      </ion-list>
+      </div>
     } @else if (!reports.length) {
-      <article class="siperil-card">
-        <div class="siperil-card-head"><h2>No hay reportes</h2></div>
-        <div class="siperil-card-body">
-          <p class="empty-copy">Crea uno desde la pantalla de inicio.</p>
-        </div>
+      <article class="empty-panel">
+        <h2>No hay reportes</h2>
+        <p>Cuando registres un hallazgo desde el inicio, aparecerá aquí.</p>
+        <ion-button routerLink="/home">Ir al inicio</ion-button>
       </article>
     } @else {
-      @for (r of reports; track r.id) {
-        <article class="siperil-card">
-          <div class="siperil-card-head">
-            <h2>{{ labels[r.reportType] }}</h2>
-            <span class="siperil-badge" [class.resolved]="r.status === 'resolved'" [class.pending]="r.status !== 'resolved'">
-              {{ r.status === 'resolved' ? 'Resuelto' : 'Pendiente' }}
-            </span>
-          </div>
-          <div class="siperil-card-body">
-            <p class="card-desc">{{ r.description }}</p>
-            <p class="meta"><span>Empresa</span> {{ r.company }}</p>
-            @if (r.weatherSummary) {
-              <p class="meta"><span>Clima</span> {{ r.weatherSummary }}</p>
-            }
-            <div class="touch-row">
-              <ion-button [routerLink]="['/reports', r.id]">Ver</ion-button>
-              @if (r.status === 'pending') {
-                <ion-button fill="outline" [routerLink]="['/reports', r.id, 'edit']">Editar</ion-button>
-                <ion-button color="danger" fill="clear" (click)="remove(r)">Eliminar</ion-button>
-              }
-            </div>
-          </div>
+      <section class="kpi-grid" aria-label="Resumen">
+        <article class="kpi kpi-total">
+          <span>Total</span>
+          <strong>{{ reports.length }}</strong>
         </article>
+        <article class="kpi kpi-pending">
+          <span>Pendientes</span>
+          <strong>{{ pendingCount }}</strong>
+        </article>
+        <article class="kpi kpi-resolved">
+          <span>Resueltos</span>
+          <strong>{{ resolvedCount }}</strong>
+        </article>
+      </section>
+
+      <div class="chips" role="tablist" aria-label="Filtrar por estado">
+        <button type="button" [class.on]="statusFilter === 'all'" (click)="setFilter('all')">
+          Todos <b>{{ reports.length }}</b>
+        </button>
+        <button type="button" [class.on]="statusFilter === 'pending'" (click)="setFilter('pending')">
+          Pendientes <b>{{ pendingCount }}</b>
+        </button>
+        <button type="button" [class.on]="statusFilter === 'resolved'" (click)="setFilter('resolved')">
+          Resueltos <b>{{ resolvedCount }}</b>
+        </button>
+      </div>
+
+      @if (!visible.length) {
+        <article class="empty-panel">
+          <h2>Sin resultados</h2>
+          <p>No hay reportes con el estado seleccionado.</p>
+        </article>
+      } @else {
+        <div class="report-grid">
+          @for (r of visible; track r.id) {
+            <article class="report-card" [class.is-resolved]="r.status === 'resolved'">
+              <div class="report-top">
+                <span class="type-icon"><ion-icon [name]="typeIcon(r.reportType)"></ion-icon></span>
+                <div class="report-id">
+                  <h2>{{ labels[r.reportType] }}</h2>
+                  <p>{{ when(r) }}@if (r.place) { · {{ r.place }} }</p>
+                </div>
+                <span
+                  class="siperil-badge"
+                  [class.resolved]="r.status === 'resolved'"
+                  [class.pending]="r.status !== 'resolved'"
+                >
+                  {{ r.status === 'resolved' ? 'Resuelto' : 'Pendiente' }}
+                </span>
+              </div>
+
+              <p class="card-desc">{{ r.description }}</p>
+
+              <dl class="facts">
+                <div>
+                  <dt>Empresa</dt>
+                  <dd>{{ r.company }}</dd>
+                </div>
+                @if (auth.isAdmin()) {
+                  <div>
+                    <dt>Autor</dt>
+                    <dd>{{ r.user?.name || '—' }}</dd>
+                  </div>
+                }
+                @if (r.weatherSummary) {
+                  <div>
+                    <dt>Clima</dt>
+                    <dd>{{ r.weatherSummary }}</dd>
+                  </div>
+                }
+              </dl>
+
+              <div class="actions" [class.only-view]="r.status !== 'pending'">
+                <ion-button [routerLink]="['/reports', r.id]">Ver</ion-button>
+                @if (r.status === 'pending') {
+                  <ion-button fill="outline" [routerLink]="['/reports', r.id, 'edit']">Editar</ion-button>
+                  <ion-button class="span" fill="outline" color="danger" (click)="remove(r)">Eliminar</ion-button>
+                }
+              </div>
+            </article>
+          }
+        </div>
       }
     }
   </div>

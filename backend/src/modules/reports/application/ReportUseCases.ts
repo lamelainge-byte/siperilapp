@@ -1,3 +1,4 @@
+// paquete de reportes, incluye el crud, resolver y las estadisticas de admin
 import type { CreateReport } from './use-cases/CreateReport.js';
 import type { DeleteReport } from './use-cases/DeleteReport.js';
 import type { GetReport } from './use-cases/GetReport.js';

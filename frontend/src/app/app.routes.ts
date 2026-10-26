@@ -44,6 +44,11 @@ export const routes: Routes = [
       import('./features/reports/report-detail.page').then((m) => m.ReportDetailPage),
   },
   {
+    path: 'ingresos',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/ingresos/ingresos.page').then((m) => m.IngresosPage),
+  },
+  {
     path: 'admin',
     canActivate: [authGuard, adminGuard], // el panel solo lo abre un administrador
     loadComponent: () => import('./features/admin/admin.page').then((m) => m.AdminPage),

@@ -10,6 +10,7 @@
           <ion-item routerLink="/home" routerLinkActive="menu-active" aria-label="Ir a Inicio">Inicio</ion-item>
           <ion-item routerLink="/reports" routerLinkActive="menu-active" aria-label="Ir a Reportes">Mis reportes</ion-item>
           @if (auth.isAdmin()) {
+            <ion-item routerLink="/ingresos" routerLinkActive="menu-active" aria-label="Ir a Ingresos">Ingresos</ion-item>
             <ion-item routerLink="/admin" routerLinkActive="menu-active" aria-label="Ir a Administración">Administración</ion-item>
           }
           <ion-item routerLink="/settings" routerLinkActive="menu-active" aria-label="Ir a Ajustes">Ajustes</ion-item>

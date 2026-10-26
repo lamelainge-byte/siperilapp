@@ -8,10 +8,12 @@
 }
 
 .logo-img {
-  height: 40px;
+  height: 96px;
   width: auto;
-  max-width: min(220px, 58vw);
+  max-width: min(360px, 86vw);
   object-fit: contain;
+  background: #ffffff;
+  border-radius: 16px;
 }
 
 .logo-svg {
@@ -48,10 +50,16 @@
   flex-shrink: 0;
 }
 
+.hero .logo-img {
+  height: auto;
+  width: min(420px, 86vw);
+  max-width: 86vw;
+  border-radius: 20px;
+}
+
 .compact .logo-img {
-  height: 32px;
-  max-width: min(148px, 38vw);
-  background: #ffffff;
+  height: 36px;
+  max-width: min(168px, 42vw);
   border-radius: 8px;
   padding: 2px 6px;
 }

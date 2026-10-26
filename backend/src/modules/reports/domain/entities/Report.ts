@@ -1,3 +1,4 @@
+// objeto de negocio del reporte, reportmodel es la fila de postgresql, el adaptador pasa de uno al otro
 import type { ReportStatus, ReportType } from '../../../../shared/utils/types.js';
 
 export type ReportAuthor = { name: string; email: string };
@@ -13,6 +14,9 @@ export type Report = {
   incidentTime: string | null;
   shift: string | null;
   place: string | null;
+  office: string | null;
+  equipmentType: string | null;
+  damageKind: string | null;
   siteId: string | null;
   latitude: number | null;
   longitude: number | null;

@@ -5,7 +5,7 @@ import type { UserPort } from '../../domain/ports/UserPort.js';
 export class DeleteUser {
   constructor(private readonly port: UserPort) {}
 
-  async execute(id: string, actor: Actor) {
+  async execute(id: string, actor: Actor): Promise<void> {
     if (actor.role !== 'admin') {
       throw new AppError(403, 'Solo un administrador puede gestionar usuarios');
     }

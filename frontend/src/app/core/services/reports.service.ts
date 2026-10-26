@@ -13,6 +13,9 @@ export interface ReportPayload {
   incidentTime?: string | null;
   shift?: string | null;
   place?: string | null;
+  office?: string | null;
+  equipmentType?: string | null;
+  damageKind?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   image?: Blob | null;
@@ -39,13 +42,13 @@ export class ReportsService {
     return reports;
   }
 
-  async get(id: string) {
+  async get(id: string): Promise<Report> {
     return this.mapReport(
       await firstValueFrom(this.http.get<Report>(`${environment.apiUrl}/reports/${id}`)),
     );
   }
 
-  stats() {
+  stats(): Promise<{ total: number; pending: number; resolved: number; companies: string[] }> {
     return firstValueFrom(
       this.http.get<{ total: number; pending: number; resolved: number; companies: string[] }>(
         `${environment.apiUrl}/reports/stats`,
@@ -86,12 +89,12 @@ export class ReportsService {
     return report;
   }
 
-  remove(id: string) {
+  remove(id: string): Promise<void> {
     // el borrado lo confirma la pantalla antes de llamar aqui
-    return firstValueFrom(this.http.delete(`${environment.apiUrl}/reports/${id}`));
+    return firstValueFrom(this.http.delete<void>(`${environment.apiUrl}/reports/${id}`));
   }
 
-  async resolve(id: string) {
+  async resolve(id: string): Promise<Report> {
     // solo el admin llama este patch desde el detalle o el panel
     return this.mapReport(
       await firstValueFrom(
@@ -167,7 +170,7 @@ export class ReportsService {
     // la foto del api se reescribe a la ip que usa este dispositivo
     return {
       ...report,
-      imageUrl: resolveMediaUrl(report.imageUrl),
+      imageUrl: resolveMediaUrl(report.imageUrl, environment.apiUrl.replace(/\/api\/?$/, '')),
     };
   }
 

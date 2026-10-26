@@ -15,12 +15,12 @@ const LARGE_TEXT_SCALE = 1.2;
  */
 @Injectable({ providedIn: 'root' })
 export class AccessibilityService {
-  readonly fontScale = signal(this.readScale());
-  readonly highContrast = signal(this.readBool(CONTRAST_KEY));
-  readonly largeText = computed(() => this.fontScale() >= LARGE_TEXT_SCALE);
-  readonly fontPercent = computed(() => Math.round(this.fontScale() * 100));
-  readonly canDecrease = computed(() => this.fontScale() > MIN_SCALE);
-  readonly canIncrease = computed(() => this.fontScale() < MAX_SCALE);
+  readonly fontScale = signal<number>(this.readScale());
+  readonly highContrast = signal<boolean>(this.readBool(CONTRAST_KEY));
+  readonly largeText = computed<boolean>(() => this.fontScale() >= LARGE_TEXT_SCALE);
+  readonly fontPercent = computed<number>(() => Math.round(this.fontScale() * 100));
+  readonly canDecrease = computed<boolean>(() => this.fontScale() > MIN_SCALE);
+  readonly canIncrease = computed<boolean>(() => this.fontScale() < MAX_SCALE);
 
   constructor() {
     if (this.readBool(LARGE_TEXT_KEY) && this.fontScale() < LARGE_TEXT_SCALE) {
