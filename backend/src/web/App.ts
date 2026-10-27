@@ -6,11 +6,13 @@ import path from 'path';
 import rateLimit from 'express-rate-limit';
 import type { AppContainer } from '../bootstrap/container.js';
 import { AuthRoutes } from '../modules/auth/infrastructure/routes/AuthRoutes.js';
+import { imageFilename } from '../modules/reports/domain/ports/ReportImagePort.js';
 import { ReportRoutes } from '../modules/reports/infrastructure/routes/ReportRoutes.js';
 import { SiteRoutes } from '../modules/sites/infrastructure/routes/SiteRoutes.js';
 import { UserRoutes } from '../modules/users/infrastructure/routes/UserRoutes.js';
 import { setupSwagger } from '../shared/config/swagger.js';
 import { errorHandler } from '../shared/middleware/error-handler.js';
+import { PRIVACY_POLICY_HTML } from './privacy-policy.js';
 
 export class App {
   private readonly app: Application;
@@ -32,7 +34,27 @@ export class App {
         limit: 300, // maximo de peticiones por ip en esa ventana
       }),
     );
-    // las fotos de evidencia se sirven desde esta carpeta
+    // politica de privacidad publica que pide google play
+    this.app.get(['/privacidad', '/privacy'], (_req, res) => {
+      res.type('html').send(PRIVACY_POLICY_HTML);
+    });
+    // las fotos viven en la base; el disco solo cubre archivos viejos de desarrollo
+    this.app.get('/uploads/:filename', async (req, res, next) => {
+      const filename = imageFilename(String(req.params.filename));
+      if (!filename) {
+        res.status(400).end();
+        return;
+      }
+      const image = await this.container.reportImages.find(filename);
+      if (!image || !image.mime.startsWith('image/')) {
+        next();
+        return;
+      }
+      res.setHeader('Content-Type', image.mime);
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      res.end(image.data);
+    });
     this.app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
   }
 
@@ -42,7 +64,7 @@ export class App {
     res.json({ status: 'ok', service: 'siperil-api' });
     });
     this.app.use('/api/auth', AuthRoutes(this.container.authUseCases));
-    this.app.use('/api/reports', ReportRoutes(this.container.reportUseCases));
+    this.app.use('/api/reports', ReportRoutes(this.container.reportUseCases, this.container.reportImages));
     this.app.use('/api/users', UserRoutes(this.container.userUseCases));
     this.app.use('/api/sites', SiteRoutes(this.container.siteUseCases));
     setupSwagger(this.app);

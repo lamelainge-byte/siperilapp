@@ -9,6 +9,7 @@ import { RegisterUser } from '../modules/auth/application/use-cases/RegisterUser
 import { JwtTokenAdapter } from '../modules/auth/infrastructure/adapters/JwtTokenAdapter.js';
 import { RefreshTokenAdapter } from '../modules/auth/infrastructure/adapters/RefreshTokenAdapter.js';
 import type { ReportUseCases } from '../modules/reports/application/ReportUseCases.js';
+import type { ReportImagePort } from '../modules/reports/domain/ports/ReportImagePort.js';
 import { CreateReport } from '../modules/reports/application/use-cases/CreateReport.js';
 import { DeleteReport } from '../modules/reports/application/use-cases/DeleteReport.js';
 import { GetReport } from '../modules/reports/application/use-cases/GetReport.js';
@@ -19,6 +20,7 @@ import { UpdateReport } from '../modules/reports/application/use-cases/UpdateRep
 import { EmailJsNotifier } from '../modules/reports/infrastructure/adapters/EmailJsNotifier.js';
 import { OpenWeatherAdapter } from '../modules/reports/infrastructure/adapters/OpenWeatherAdapter.js';
 import { ReportAdapter } from '../modules/reports/infrastructure/adapters/ReportAdapter.js';
+import { ReportImageAdapter } from '../modules/reports/infrastructure/adapters/ReportImageAdapter.js';
 import type { SiteUseCases } from '../modules/sites/application/SiteUseCases.js';
 import { CreateSite } from '../modules/sites/application/use-cases/CreateSite.js';
 import { DeleteSite } from '../modules/sites/application/use-cases/DeleteSite.js';
@@ -40,6 +42,7 @@ export type AppContainer = {
   userUseCases: UserUseCases;
   authUseCases: AuthUseCases;
   reportUseCases: ReportUseCases;
+  reportImages: ReportImagePort;
   siteUseCases: SiteUseCases;
 };
 
@@ -78,6 +81,7 @@ export function buildContainer(): AppContainer {
       getCurrentUser: new GetCurrentUser(users),
       listAccessLogs: new ListAccessLogs(accessLogs),
     },
+    reportImages: new ReportImageAdapter(),
     reportUseCases: {
       listReports: new ListReports(reports, publicBaseUrl),
       getReport: new GetReport(reports, publicBaseUrl),

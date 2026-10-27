@@ -1,25 +1,13 @@
 import { Router } from 'express';
-import fs from 'fs';
 import multer from 'multer';
-import path from 'path';
 import { requireAuth, requireRole } from '../../../../shared/middleware/auth.middleware.js';
 import type { ReportUseCases } from '../../application/ReportUseCases.js';
+import type { ReportImagePort } from '../../domain/ports/ReportImagePort.js';
 import { ReportController } from '../controllers/ReportController.js';
 
-const uploadDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
 const upload = multer({
-  // guarda la evidencia en disco con nombre unico y solo acepta imagenes
-  storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, uploadDir),
-    filename: (_req, file, cb) => {
-      const ext = path.extname(file.originalname) || '.jpg';
-      cb(null, `${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`);
-    },
-  }),
+  // la evidencia queda en memoria y el controlador la guarda en la base
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // tope de 5 mb por evidencia
   fileFilter: (_req, file, cb) => {
     // rechaza pdf u otros archivos que no sean imagen
@@ -31,9 +19,9 @@ const upload = multer({
   },
 });
 
-export function ReportRoutes(useCases: ReportUseCases) {
+export function ReportRoutes(useCases: ReportUseCases, images: ReportImagePort) {
   const router = Router();
-  const controller = new ReportController(useCases);
+  const controller = new ReportController(useCases, images);
   router.use(requireAuth);
   router.get('/', controller.list);
   // conteos y resolver un reporte son solo de administrador

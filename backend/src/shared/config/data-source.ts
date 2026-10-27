@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 // datasource es la clase de typeorm que representa la conexion a la base
 import { AccessLogModel } from '../../modules/auth/infrastructure/persistence/AccessLogModel.js';
 import { RefreshTokenModel } from '../../modules/auth/infrastructure/persistence/RefreshTokenModel.js';
+import { ReportImageModel } from '../../modules/reports/infrastructure/persistence/ReportImageModel.js';
 import { ReportModel } from '../../modules/reports/infrastructure/persistence/ReportModel.js';
 import { SiteModel } from '../../modules/sites/infrastructure/persistence/SiteModel.js';
 import { UserModel } from '../../modules/users/infrastructure/persistence/UserModel.js';
@@ -10,6 +11,7 @@ import { AddEmployeeNumber1726500000000 } from './migrations/1726500000000-AddEm
 import { AccessLog1726700000000 } from './migrations/1726700000000-AccessLog.js';
 import { HeightEquipmentReport1726600000000 } from './migrations/1726600000000-HeightEquipmentReport.js';
 import { InitSchema1726400000000 } from './migrations/1726400000000-InitSchema.js';
+import { ReportImage1726800000000 } from './migrations/1726800000000-ReportImage.js';
 // esta clase trae el sql que crea esas tablas la primera vez
 import { envs } from './environment-vars.js';
 // host, puerto, usuario, clave y nombre de la base salen del .env ya validado
@@ -27,6 +29,12 @@ export const AppDataSource = new DataSource({
   synchronize: false, // apagado: typeorm no crea ni cambia tablas al arrancar
   migrationsRun: true, // al conectar ejecuta las migraciones que aun no corrieron
   logging: envs.nodeEnv === 'development', // en desarrollo imprime el sql en la consola
-  entities: [UserModel, ReportModel, SiteModel, RefreshTokenModel, AccessLogModel],
-  migrations: [InitSchema1726400000000, AddEmployeeNumber1726500000000, HeightEquipmentReport1726600000000, AccessLog1726700000000],
+  entities: [UserModel, ReportModel, ReportImageModel, SiteModel, RefreshTokenModel, AccessLogModel],
+  migrations: [
+    InitSchema1726400000000,
+    AddEmployeeNumber1726500000000,
+    HeightEquipmentReport1726600000000,
+    AccessLog1726700000000,
+    ReportImage1726800000000,
+  ],
 });
